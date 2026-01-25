@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+    container_name: django_backend
+    volumes:
+      - ./backend:/app # Volume per Hot-Reloading del codice Python
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+    # Dipende dal database se ne aggiungerai uno (es. postgres)
+
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: vite_frontend
+    volumes:
+      - ./frontend:/app # Volume per Hot-Reloading del codice JS/Vue/React
+      - /app/node_modules # Evita di sovrascrivere node_modules del container con quello locale vuoto
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Utile se sei su Windows/WSL per rilevare i cambi file
