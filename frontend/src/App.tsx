@@ -1,50 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './App.css';
-import type { MemeTemplate } from './types';
-import { MemeCard } from './components/MemeCard';
-import { MemeModal } from './components/MemeModal';
+import { LandingPage } from './pages/LandingPage';
+import { UploadPage } from './pages/UploadPage';
 
 function App() {
-  const [templates, setTemplates] = useState<MemeTemplate[]>([]);
-  const [selectedMeme, setSelectedMeme] = useState<MemeTemplate | null>(null);
-
-  useEffect(() => {
-    // CHIAMATA REALE AL BACKEND
-    fetch('/api/templates/')
-      .then((res) => res.json())
-      .then((data) => {
-        // Django a volte restituisce l'URL relativo o assoluto, gestiamo entrambi i casi se serve.
-        // Ma grazie al proxy di Vite, dovrebbe funzionare direttamente.
-        setTemplates(data);
-      })
-      .catch((err) => console.error("Errore fetch:", err));
-  }, []);
+  // Stato per decidere quale pagina mostrare: 'home' o 'upload'
+  const [currentPage, setCurrentPage] = useState<'home' | 'upload'>('home');
 
   return (
-    <div className="container">
-      <h1>Template Planet 🪐</h1>
+    <>
+      {currentPage === 'home' && (
+        <LandingPage onNavigateToUpload={() => setCurrentPage('upload')} />
+      )}
       
-      {templates.length === 0 ? (
-        <p>Caricamento meme dal database...</p>
-      ) : (
-        <div className="meme-grid">
-          {templates.map((meme) => (
-            <MemeCard 
-              key={meme.id} 
-              template={meme} 
-              onClick={setSelectedMeme} 
-            />
-          ))}
-        </div>
+      {currentPage === 'upload' && (
+        <UploadPage onBack={() => setCurrentPage('home')} />
       )}
-
-      {selectedMeme && (
-        <MemeModal 
-            template={selectedMeme} 
-            onClose={() => setSelectedMeme(null)} 
-        />
-      )}
-    </div>
+    </>
   );
 }
 

@@ -1,4 +1,4 @@
-/* Reset di base */
+/* Reset e Base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,71 +6,182 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #1a1a1a;
-  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
   min-height: 100vh;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Layout Generale */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-h1 {
-  margin-bottom: 2rem;
-  font-size: 3rem;
-  background: -webkit-linear-gradient(45deg, #646cff, #42b883);
+/* HEADER STYLE */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #646cff, #42b883);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Griglia delle immagini */
-.meme-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 2rem;
-  padding: 1rem;
+.main-nav a {
+  text-decoration: none;
+  color: #ccc;
+  margin-left: 2rem;
+  font-weight: 500;
+  transition: color 0.2s;
 }
 
+.main-nav a:hover {
+  color: #fff;
+}
+
+.nav-btn-upload {
+  background-color: #646cff;
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.nav-btn-upload:hover {
+  background-color: #535bf2;
+}
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1; /* Spinge il footer in basso */
+  padding: 2rem;
+  max-width: 100%;
+  overflow: hidden; /* Evita scroll orizzontale della pagina intera */
+}
+
+.hero-section {
+  margin-bottom: 2rem;
+}
+
+.hero-section h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero-section p {
+  color: #888;
+}
+
+/* SCROLL ORIZZONTALE */
+.meme-scroll-container {
+  display: flex; /* Mette gli elementi in riga */
+  gap: 1.5rem;
+  overflow-x: auto; /* Abilita lo scroll orizzontale */
+  padding-bottom: 1.5rem; /* Spazio per la scrollbar */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Scroll fluido su mobile */
+}
+
+/* Stilizzazione Scrollbar (Opzionale, per Chrome/Safari) */
+.meme-scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+.meme-scroll-container::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 4px;
+}
+.meme-scroll-container::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+.meme-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #646cff;
+}
+
+/* CARD PICCOLE */
 .meme-card {
-  background-color: #242424;
-  border-radius: 12px;
+  min-width: 200px; /* Larghezza fissa piccola */
+  max-width: 200px;
+  background-color: #1e1e1e;
+  border-radius: 10px;
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
   border: 1px solid #333;
+  transition: transform 0.2s, border-color 0.2s;
 }
 
 .meme-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
   border-color: #646cff;
 }
 
 .meme-card img {
   width: 100%;
-  height: 200px;
+  height: 140px; /* Immagine più piccola */
   object-fit: cover;
   display: block;
 }
 
 .meme-title {
-  padding: 1rem;
-  font-size: 1.1rem;
-  font-weight: bold;
+  padding: 0.8rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* ... se il testo è troppo lungo */
 }
 
-/* Finestra Modale (Popup) */
+/* FOOTER STYLE */
+.app-footer {
+  background-color: #1a1a1a;
+  padding: 2rem;
+  border-top: 1px solid #333;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-content p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.footer-links a {
+  color: #888;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+  color: #646cff;
+}
+
+/* Modale */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -79,23 +190,21 @@ h1 {
 }
 
 .modal-content {
-  background: #2a2a2a;
-  padding: 2rem;
-  border-radius: 16px;
+  background: #252525;
+  padding: 1.5rem;
+  border-radius: 12px;
   max-width: 90%;
   max-height: 90%;
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .modal-image {
   max-width: 100%;
-  max-height: 70vh;
+  max-height: 60vh;
   border-radius: 8px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .button-group {
@@ -105,23 +214,172 @@ h1 {
 
 button {
   padding: 0.8em 1.5em;
-  font-size: 1em;
-  font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
-  transition: border-color 0.25s;
-  border: 1px solid transparent;
+  font-weight: 600;
+  border: none;
 }
 
-.btn-download {
-  background-color: #646cff;
-  color: white;
-}
+.btn-download { background-color: #646cff; color: white; }
 .btn-download:hover { background-color: #535bf2; }
+.btn-close { background-color: #444; color: white; }
+.btn-close:hover { background-color: #555; }
 
-.btn-close {
-  background-color: transparent;
-  border: 1px solid #666;
-  color: #ccc;
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%; /* IMPORTANTE */
 }
-.btn-close:hover { border-color: #fff; color: #fff; }
+
+/* Modifica leggermente l'header per spaziare bene il contenuto */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem; /* Un po' più di padding laterale */
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+  width: 100%;
+}
+.layout-container {
+  display: flex;
+  flex: 1; /* Occupa tutto lo spazio tra header e footer */
+  width: 100%;
+  overflow: hidden; /* Evita scroll indesiderati */
+}
+
+/* SIDEBAR */
+.app-sidebar {
+  width: 260px; /* Larghezza fissa */
+  background-color: #1a1a1a;
+  border-right: 1px solid #333;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; /* Impedisce alla sidebar di schiacciarsi */
+}
+
+.filter-group h3 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.filter-list {
+  list-style: none;
+  margin-bottom: 2rem;
+}
+
+.filter-item {
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-item:hover, .filter-item.active {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.filter-item.active {
+  border-left: 3px solid #646cff;
+}
+
+/* MAIN AREA (Parte destra) */
+.main-content {
+  flex: 1;
+  padding: 2rem 3rem;
+  overflow-y: auto; /* Solo questa parte scorre in verticale se serve */
+  background-color: #121212;
+}
+
+/* BARRA DI RICERCA */
+.search-container {
+  margin-bottom: 2rem;
+  max-width: 600px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #646cff;
+  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.2);
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+/* STILI UPLOAD PAGE */
+.upload-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.upload-card {
+  background-color: #1a1a1a;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #333;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+.btn-back:hover { color: white; }
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.file-input {
+  color: #ccc;
+  padding: 0.5rem 0;
+  padding: 0.5rem 0;
+}
+
+.preview-box {
+  margin: 1rem 0;
+  text-align: center;
+  background: #000;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.preview-box img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+}

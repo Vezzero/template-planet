@@ -16,13 +16,14 @@ export const MemeCard = ({ template, onClick }: MemeCardProps) => {
 
     return (
         <div className="meme-card" onClick={() => onClick(template)}>
-            {/* Usiamo getImageUrl per correggere il link */}
-            <img 
-                src={getImageUrl(template.image)} 
-                alt={template.title} 
-                loading="lazy" 
-            />
-            <div className="meme-title">{template.title}</div>
+            <img src={getImageUrl(template.image)} alt={template.title} loading="lazy" />
+            <div className="meme-info" style={{ padding: '0.8rem' }}>
+                <div className="meme-title" style={{ fontWeight: 'bold' }}>{template.title}</div>
+                {/* Mostra i tag piccoli e grigi */}
+                <div style={{ fontSize: '0.75rem', color: '#888', marginTop: '4px' }}>
+                    {template.tags.map(t => `#${t} `)}
+                </div>
+            </div>
         </div>
     );
 };

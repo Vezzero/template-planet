@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import MemeTemplate
+from .models import MemeTemplate, Tag
 
-# Registra il modello per vederlo nel pannello
-admin.site.register(MemeTemplate)
+admin.site.register(Tag)
+
+@admin.register(MemeTemplate)
+class MemeTemplateAdmin(admin.ModelAdmin):
+    list_display = ('title', 'created_at')
+    filter_horizontal = ('tags',)
