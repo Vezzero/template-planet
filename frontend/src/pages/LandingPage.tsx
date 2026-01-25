@@ -6,9 +6,10 @@ import '../App.css';
 
 interface LandingPageProps {
     onNavigateToUpload: () => void;
+    onNavigateToAdmin: () => void;
 }
 
-export const LandingPage = ({ onNavigateToUpload }: LandingPageProps) => {
+export const LandingPage = ({ onNavigateToUpload, onNavigateToAdmin }: LandingPageProps) => {
   const [templates, setTemplates] = useState<MemeTemplate[]>([]);
   const [selectedMeme, setSelectedMeme] = useState<MemeTemplate | null>(null);
   
@@ -120,10 +121,11 @@ export const LandingPage = ({ onNavigateToUpload }: LandingPageProps) => {
 
       {/* FOOTER */}
       <footer className="app-footer">
-        <div className="footer-content">
-          <p>&copy; 2026 Template Planet.</p>
-        </div>
-      </footer>
+    {/* ... */}
+    <div className="footer-links">
+        <a href="#" onClick={onNavigateToAdmin}>Admin Login</a> {/* Link Temporaneo */}
+    </div>
+</footer>
 
       {/* MODALE */}
       {selectedMeme && (
