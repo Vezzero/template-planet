@@ -21,7 +21,8 @@ export const MemeCard = ({ template, onClick }: MemeCardProps) => {
                 <div className="meme-title" style={{ fontWeight: 'bold' }}>{template.title}</div>
                 {/* Mostra i tag piccoli e grigi */}
                 <div style={{ fontSize: '0.75rem', color: '#888', marginTop: '4px' }}>
-                    {template.tags.map(t => `#${t} `)}
+                    {/* Usiamo t.name invece di t */}
+                    {template.tags.map(t => `#${t.name} `)}
                 </div>
             </div>
         </div>

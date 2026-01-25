@@ -383,3 +383,36 @@ button {
   max-height: 300px;
   border-radius: 4px;
 }
+
+/* STILE SELEZIONE TAG */
+.tags-selection-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 0.5rem;
+}
+
+.tag-chip {
+  padding: 0.5rem 1rem;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #ccc;
+  transition: all 0.2s ease;
+  user-select: none; /* Impedisce di selezionare il testo cliccando */
+}
+
+.tag-chip:hover {
+  border-color: #646cff;
+  color: white;
+}
+
+.tag-chip.selected {
+  background-color: #646cff;
+  border-color: #646cff;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(100, 108, 255, 0.4);
+}

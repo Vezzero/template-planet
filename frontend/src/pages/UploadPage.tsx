@@ -1,18 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../App.css';
 
+interface Tag {
+    id: number;
+    name: string;
+}
+
 interface UploadPageProps {
-    onBack: () => void; // Funzione per tornare alla home
+    onBack: () => void;
 }
 
 export const UploadPage = ({ onBack }: UploadPageProps) => {
     const [title, setTitle] = useState('');
-    const [tags, setTags] = useState('');
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Gestione selezione file e anteprima
+    // NUOVI STATI PER I TAG
+    const [availableTags, setAvailableTags] = useState<Tag[]>([]); // Tag scaricati dal DB
+    const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]); // ID selezionati dall'utente
+
+    // 1. Carichiamo i tag appena si apre la pagina
+    useEffect(() => {
+        fetch('/api/tags/')
+            .then(res => res.json())
+            .then(data => setAvailableTags(data))
+            .catch(err => console.error("Errore caricamento tag:", err));
+    }, []);
+
+    // Gestione click sul tag (Seleziona/Deseleziona)
+    const toggleTag = (id: number) => {
+        if (selectedTagIds.includes(id)) {
+            setSelectedTagIds(selectedTagIds.filter(tagId => tagId !== id));
+        } else {
+            setSelectedTagIds([...selectedTagIds, id]);
+        }
+    };
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -21,7 +45,6 @@ export const UploadPage = ({ onBack }: UploadPageProps) => {
         }
     };
 
-    // Invio del form
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!title || !image) {
@@ -30,29 +53,33 @@ export const UploadPage = ({ onBack }: UploadPageProps) => {
         }
 
         setIsLoading(true);
-
-        // Usiamo FormData per inviare file + testo
         const formData = new FormData();
         formData.append('title', title);
         formData.append('image', image);
-        formData.append('tags_input', tags); // Nota: deve chiamarsi come nel serializer Django
+        
+        // IMPORTANTE: Appendiamo ogni ID separatamente
+        // Django li leggerà come una lista
+        selectedTagIds.forEach(id => {
+            formData.append('tag_ids', id.toString());
+        });
 
         try {
             const response = await fetch('/api/templates/', {
                 method: 'POST',
-                body: formData, // Non mettere headers 'Content-Type', il browser lo mette da solo per i file!
+                body: formData,
             });
 
             if (response.ok) {
                 alert("Meme caricato con successo! 🚀");
-                onBack(); // Torna alla home
+                onBack();
             } else {
-                console.error("Errore server:", await response.text());
-                alert("Errore durante il caricamento.");
+                const errorText = await response.text();
+                console.error("Errore server:", errorText);
+                alert("Errore caricamento: " + errorText);
             }
         } catch (error) {
-            console.error("Errore di rete:", error);
-            alert("Impossibile contattare il server.");
+            console.error(error);
+            alert("Errore di rete.");
         } finally {
             setIsLoading(false);
         }
@@ -66,7 +93,6 @@ export const UploadPage = ({ onBack }: UploadPageProps) => {
                 <h2>Carica un nuovo Template</h2>
                 
                 <form onSubmit={handleSubmit} className="upload-form">
-                    {/* Campo Titolo */}
                     <div className="form-group">
                         <label>Titolo</label>
                         <input 
@@ -74,23 +100,30 @@ export const UploadPage = ({ onBack }: UploadPageProps) => {
                             value={title} 
                             onChange={(e) => setTitle(e.target.value)} 
                             placeholder="Es. Gatto Computer" 
-                            className="search-input" // Ricicliamo lo stile dell'input
-                        />
-                    </div>
-
-                    {/* Campo Tag */}
-                    <div className="form-group">
-                        <label>Tag (separati da virgola)</label>
-                        <input 
-                            type="text" 
-                            value={tags} 
-                            onChange={(e) => setTags(e.target.value)} 
-                            placeholder="Es. gatto, tech, divertente" 
                             className="search-input"
                         />
                     </div>
 
-                    {/* Campo File */}
+                    {/* SELEZIONE TAG A PULSANTI */}
+                    <div className="form-group">
+                        <label>Seleziona Categorie:</label>
+                        <div className="tags-selection-container">
+                            {availableTags.length === 0 ? (
+                                <p style={{color: '#666', fontSize: '0.9rem'}}>Nessun tag disponibile. Creane uno dal pannello Admin.</p>
+                            ) : (
+                                availableTags.map(tag => (
+                                    <div 
+                                        key={tag.id}
+                                        className={`tag-chip ${selectedTagIds.includes(tag.id) ? 'selected' : ''}`}
+                                        onClick={() => toggleTag(tag.id)}
+                                    >
+                                        {tag.name}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+
                     <div className="form-group">
                         <label>Immagine</label>
                         <input 
@@ -101,7 +134,6 @@ export const UploadPage = ({ onBack }: UploadPageProps) => {
                         />
                     </div>
 
-                    {/* Anteprima */}
                     {preview && (
                         <div className="preview-box">
                             <img src={preview} alt="Anteprima" />

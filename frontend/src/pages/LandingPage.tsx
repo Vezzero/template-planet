@@ -29,8 +29,7 @@ export const LandingPage = ({ onNavigateToUpload }: LandingPageProps) => {
     // Cerca nel titolo
     const matchTitle = meme.title.toLowerCase().includes(searchLower);
     
-    // Cerca nei tag (se un tag include il testo cercato)
-    const matchTags = meme.tags.some(tag => tag.toLowerCase().includes(searchLower));
+    const matchTags = meme.tags.some(tag => tag.name.toLowerCase().includes(searchLower));
 
     // Se uno dei due è vero, mostra il meme
     return matchTitle || matchTags;

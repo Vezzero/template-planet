@@ -1,32 +1,28 @@
 from rest_framework import serializers
 from .models import MemeTemplate, Tag
 
+# 1. Serializer semplice per elencare i tag disponibili
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'name']
+
+# 2. Aggiorniamo il serializer dei Meme
 class MemeTemplateSerializer(serializers.ModelSerializer):
-    # 'tags' serve per LEGGERE (output): restituisce ["gatto", "cane"]
-    tags = serializers.StringRelatedField(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True) # Per LEGGERE (mostra nomi)
     
-    # 'tags_input' serve per SCRIVERE (input): accetta "gatto, cane"
-    tags_input = serializers.CharField(write_only=True, required=False)
+    # Per SCRIVERE: Accetta una lista di ID (es: [1, 5, 8])
+    # PrimaryKeyRelatedField controlla automaticamente che l'ID esista nel DB!
+    tag_ids = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        queryset=Tag.objects.all(), 
+        write_only=True,
+        source='tags' # Dice a Django di salvare questi ID nel campo 'tags' del modello
+    )
 
     class Meta:
         model = MemeTemplate
-        fields = ['id', 'title', 'image', 'tags', 'tags_input', 'created_at']
+        fields = ['id', 'title', 'image', 'tags', 'tag_ids', 'created_at']
 
-    # Sovrascriviamo il metodo create per gestire i tag manuali
-    def create(self, validated_data):
-        # Estraiamo la stringa dei tag (se c'è) e la rimuoviamo dai dati del meme
-        tags_string = validated_data.pop('tags_input', None)
-        
-        # Creiamo il meme
-        meme = MemeTemplate.objects.create(**validated_data)
-
-        # Se ci sono tag, li splittiamo e li creiamo/colleghiamo
-        if tags_string:
-            tag_names = [name.strip() for name in tags_string.split(',')]
-            for name in tag_names:
-                if name: # Evita stringhe vuote
-                    # get_or_create restituisce (oggetto, creato_booleano)
-                    tag, _ = Tag.objects.get_or_create(name=name)
-                    meme.tags.add(tag)
-        
-        return meme
+    # Non serve più il metodo create() personalizzato! 
+    # Django gestisce da solo il salvataggio delle relazioni ManyToMany se usiamo PrimaryKeyRelatedField.
