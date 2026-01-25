@@ -1,17 +1,30 @@
 import { useState, useEffect } from 'react';
 import type { MemeTemplate } from '../types';
+import type { User } from '../App';
 import { MemeCard } from '../components/MemeCard';
 import { MemeModal } from '../components/MemeModal';
+import { UserMenu } from '../components/UserMenu';
+import { UserDashboard } from '../components/UserDashboard';
 import '../App.css';
 
 interface LandingPageProps {
+  user: User | null; // <--- NUOVO
+    onLogin: (u: User) => void; // <--- NUOVO
+    onLogout: () => void; // <--- NUOVO
     onNavigateToUpload: () => void;
     onNavigateToAdmin: () => void;
 }
 
-export const LandingPage = ({ onNavigateToUpload, onNavigateToAdmin }: LandingPageProps) => {
+export const LandingPage = ({ 
+    user, 
+    onLogin, 
+    onLogout, 
+    onNavigateToUpload, 
+    onNavigateToAdmin 
+}: LandingPageProps) => {
   const [templates, setTemplates] = useState<MemeTemplate[]>([]);
   const [selectedMeme, setSelectedMeme] = useState<MemeTemplate | null>(null);
+  const [showDashboard, setShowDashboard] = useState(false);
   
   // 1. STATI PER FILTRI E RICERCA
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,12 +54,18 @@ export const LandingPage = ({ onNavigateToUpload, onNavigateToAdmin }: LandingPa
     <div className="app-wrapper">
       <header className="app-header">
         <div className="logo">Template Planet 🪐</div>
-        <nav className="main-nav">
+        <nav className="main-nav" style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
           <a href="#" onClick={(e) => e.preventDefault()}>Blog</a>
-          {/* 3. Collega il bottone alla funzione */}
-          <a href="#" className="nav-btn-upload" onClick={onNavigateToUpload}>
-            Carica Meme
-          </a>
+          
+          {/* QUI INSERIAMO IL MENU UTENTE AL POSTO DEI VECCHI BOTTONI */}
+          <UserMenu 
+            user={user}
+            onLoginSuccess={onLogin}
+            onLogout={onLogout}
+            onUploadClick={onNavigateToUpload}
+            onAdminClick={onNavigateToAdmin}
+            onMyUploadsClick={() => setShowDashboard(true)}
+          />
         </nav>
       </header>
 
@@ -64,10 +83,10 @@ export const LandingPage = ({ onNavigateToUpload, onNavigateToAdmin }: LandingPa
               >
                 🏠 Tutti i Template
               </li>
-              <li className="filter-item">🔥 Trending</li>
-              <li className="filter-item">✨ Nuovi Arrivi</li>
-              <li className="filter-item">🐱 Animali</li>
-              <li className="filter-item">🎬 Cinema/TV</li>
+              <li className="filter-item">Trending</li>
+              <li className="filter-item">Nuovi Arrivi</li>
+              <li className="filter-item">Animali</li>
+              <li className="filter-item">Cinema/TV</li>
             </ul>
           </div>
 
@@ -133,6 +152,9 @@ export const LandingPage = ({ onNavigateToUpload, onNavigateToAdmin }: LandingPa
             template={selectedMeme} 
             onClose={() => setSelectedMeme(null)} 
         />
+      )}
+      {showDashboard && user && (
+          <UserDashboard user={user} onClose={() => setShowDashboard(false)} />
       )}
     </div>
   );

@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react';
 import '../App.css';
-
-interface Tag {
-    id: number;
-    name: string;
-}
+// IMPORT FONDAMENTALI:
+import type { Tag } from '../types'; // <--- Questo risolve l'errore 'Cannot find name Tag'
+import type { User } from '../App';  // Serve per l'autore
 
 interface UploadPageProps {
     onBack: () => void;
+    user: User | null; // Utente loggato
 }
 
-export const UploadPage = ({ onBack }: UploadPageProps) => {
+export const UploadPage = ({ onBack, user }: UploadPageProps) => {
     const [title, setTitle] = useState('');
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // NUOVI STATI PER I TAG
+    // STATI PER I TAG
     const [availableTags, setAvailableTags] = useState<Tag[]>([]); // Tag scaricati dal DB
     const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]); // ID selezionati dall'utente
 
@@ -57,11 +56,15 @@ export const UploadPage = ({ onBack }: UploadPageProps) => {
         formData.append('title', title);
         formData.append('image', image);
         
-        // IMPORTANTE: Appendiamo ogni ID separatamente
-        // Django li leggerà come una lista
+        // Appendiamo ogni ID dei tag separatamente
         selectedTagIds.forEach(id => {
             formData.append('tag_ids', id.toString());
         });
+
+        // Appendiamo l'autore se esiste (per il login simulato)
+        if (user) {
+            formData.append('username_author', user.username);
+        }
 
         try {
             const response = await fetch('/api/templates/', {
@@ -70,7 +73,7 @@ export const UploadPage = ({ onBack }: UploadPageProps) => {
             });
 
             if (response.ok) {
-                alert("Meme caricato con successo! 🚀");
+                alert("Meme caricato con successo! Sarà visibile dopo l'approvazione. 🚀");
                 onBack();
             } else {
                 const errorText = await response.text();
