@@ -8,9 +8,9 @@ import { UserDashboard } from '../components/UserDashboard';
 import '../App.css';
 
 interface LandingPageProps {
-  user: User | null; // <--- NUOVO
-    onLogin: (u: User) => void; // <--- NUOVO
-    onLogout: () => void; // <--- NUOVO
+    user: User | null;
+    onLogin: (u: User) => void;
+    onLogout: () => void;
     onNavigateToUpload: () => void;
     onNavigateToAdmin: () => void;
 }
@@ -22,140 +22,148 @@ export const LandingPage = ({
     onNavigateToUpload, 
     onNavigateToAdmin 
 }: LandingPageProps) => {
-  const [templates, setTemplates] = useState<MemeTemplate[]>([]);
-  const [selectedMeme, setSelectedMeme] = useState<MemeTemplate | null>(null);
-  const [showDashboard, setShowDashboard] = useState(false);
-  
-  // 1. STATI PER FILTRI E RICERCA
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilter, setActiveFilter] = useState("Tutti");
-
-  useEffect(() => {
-    fetch('/api/templates/')
-      .then((res) => res.json())
-      .then((data) => setTemplates(data))
-      .catch((err) => console.error("Errore fetch:", err));
-  }, []);
-
-  const filteredTemplates = templates.filter((meme) => {
-    const searchLower = searchTerm.toLowerCase();
     
-    // Cerca nel titolo
-    const matchTitle = meme.title.toLowerCase().includes(searchLower);
-    
-    const matchTags = meme.tags.some(tag => tag.name.toLowerCase().includes(searchLower));
+    const [templates, setTemplates] = useState<MemeTemplate[]>([]);
+    const [selectedMeme, setSelectedMeme] = useState<MemeTemplate | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [activeFilter, setActiveFilter] = useState("All");
+    const [showDashboard, setShowDashboard] = useState(false);
 
-    // Se uno dei due è vero, mostra il meme
-    return matchTitle || matchTags;
-  });
+    useEffect(() => {
+        fetch('/api/templates/')
+            .then((res) => res.json())
+            .then((data) => setTemplates(data))
+            .catch((err) => console.error("Errore fetch:", err));
+    }, []);
 
+    const handleDelete = async (id: number) => {
+        if (!window.confirm("Are you sure you want to delete this meme?")) {
+            return;
+        }
 
-  return (
-    <div className="app-wrapper">
-      <header className="app-header">
-        <div className="logo">Template Planet 🪐</div>
-        <nav className="main-nav" style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
-          <a href="#" onClick={(e) => e.preventDefault()}>Blog</a>
-          
-          {/* QUI INSERIAMO IL MENU UTENTE AL POSTO DEI VECCHI BOTTONI */}
-          <UserMenu 
-            user={user}
-            onLoginSuccess={onLogin}
-            onLogout={onLogout}
-            onUploadClick={onNavigateToUpload}
-            onAdminClick={onNavigateToAdmin}
-            onMyUploadsClick={() => setShowDashboard(true)}
-          />
-        </nav>
-      </header>
+        try {
+            const response = await fetch(`/api/templates/${id}/`, {
+                method: 'DELETE',
+            });
 
-      {/* CONTENITORE LAYOUT (Sidebar + Main) */}
-      <div className="layout-container">
-        
-        {/* SIDEBAR SINISTRA */}
-        <aside className="app-sidebar">
-          <div className="filter-group">
-            <h3>Categorie</h3>
-            <ul className="filter-list">
-              <li 
-                className={`filter-item ${activeFilter === 'Tutti' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('Tutti')}
-              >
-                🏠 Tutti i Template
-              </li>
-              <li className="filter-item">Trending</li>
-              <li className="filter-item">Nuovi Arrivi</li>
-              <li className="filter-item">Animali</li>
-              <li className="filter-item">Cinema/TV</li>
-            </ul>
-          </div>
+            if (response.ok) {
+                setTemplates(prev => prev.filter(t => t.id !== id));
+            } else {
+                alert("Error deleting meme.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Connection error.");
+        }
+    };
 
-          <div className="filter-group">
-            <h3>Formato</h3>
-            <ul className="filter-list">
-              <li className="filter-item">Quadrato (1:1)</li>
-              <li className="filter-item">Verticale (Story)</li>
-            </ul>
-          </div>
-        </aside>
+    const filteredTemplates = templates.filter((meme) => {
+        const searchLower = searchTerm.toLowerCase();
+        const matchTitle = meme.title.toLowerCase().includes(searchLower);
+        const matchTags = meme.tags.some(tag => tag.name.toLowerCase().includes(searchLower));
+        return matchTitle || matchTags;
+    });
 
-        {/* CONTENUTO CENTRALE */}
-        <main className="main-content">
-          <div className="hero-section">
-            <h2>Esplora la collezione</h2>
-            <p>Cerca il template perfetto per il tuo prossimo meme virale.</p>
-          </div>
+    return (
+        <div className="app-wrapper">
+            
+            {/* FIXED HEADER */}
+            <header className="app-header fixed-header">
+                
+                {/* 1. LOGO PLACEHOLDER (Empty for now) */}
+                <div className="logo-area" style={{ width: '150px' }}>
+                   {/* Put <img src="..." /> here later */}
+                </div>
 
-          {/* BARRA DI RICERCA */}
-          <div className="search-container">
-            <input 
-              type="text" 
-              placeholder="🔍 Cerca template (es. gatto, batman...)" 
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          
-          {/* RISULTATI (Scroll Orizzontale) */}
-          <h3 style={{ marginBottom: '1rem', color: '#888' }}>
-            Risultati ({filteredTemplates.length})
-          </h3>
+                <div className="header-search-container">
+                    <i className="bi bi-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        placeholder="Search templates..." 
+                        className="header-search-input"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
 
-          {filteredTemplates.length === 0 ? (
-            <p className="loading-text">Nessun meme trovato con questo nome.</p>
-          ) : (
-            <div className="meme-scroll-container">
-              {filteredTemplates.map((meme) => (
-                <MemeCard 
-                  key={meme.id} 
-                  template={meme} 
-                  onClick={setSelectedMeme} 
-                />
-              ))}
+                {/* 3. USER MENU */}
+                <nav className="main-nav">
+                    <UserMenu 
+                        user={user}
+                        onLoginSuccess={onLogin}
+                        onLogout={onLogout}
+                        onUploadClick={onNavigateToUpload}
+                        onAdminClick={onNavigateToAdmin}
+                        onMyUploadsClick={() => setShowDashboard(true)}
+                    />
+                </nav>
+            </header>
+
+            <div className="layout-container with-fixed-header">
+                
+                {/* SIDEBAR */}
+                <aside className="app-sidebar">
+                    <div className="filter-group">
+                        <h3>Categories</h3>
+                        <ul className="filter-list">
+                            <li className={`filter-item ${activeFilter === 'All' ? 'active' : ''}`} onClick={() => setActiveFilter('All')}>
+                                <i className="bi bi-grid-fill"></i> All Templates
+                            </li>
+                            <li className="filter-item"><i className="bi bi-fire"></i> Trending</li>
+                            <li className="filter-item"><i className="bi bi-stars"></i> New</li>
+                        </ul>
+                    </div>
+                </aside>
+
+                {/* CONTENT AREA */}
+                <main className="main-content">
+                    {/* Hero Section reduced slightly since search is gone */}
+                    <div className="hero-section">
+                        <h2>Explore the collection</h2>
+                    </div>
+
+                    <h3 style={{ marginBottom: '1rem', color: '#888', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                        Results ({filteredTemplates.length})
+                    </h3>
+
+                    <div className="meme-scroll-container">
+                        {filteredTemplates.map((meme) => (
+                            <MemeCard 
+                                key={meme.id} 
+                                template={meme} 
+                                onClick={setSelectedMeme} 
+                                isAdmin={user?.is_staff} 
+                                onDelete={handleDelete}
+                            />
+                        ))}
+                    </div>
+
+                    {filteredTemplates.length === 0 && (
+                        <div className="empty-state">
+                            <i className="bi bi-emoji-frown" style={{fontSize: '2rem', marginBottom: '10px'}}></i>
+                            <p>No templates found.</p>
+                        </div>
+                    )}
+                </main>
             </div>
-          )}
-        </main>
-      </div>
 
-      {/* FOOTER */}
-      <footer className="app-footer">
-    {/* ... */}
-    <div className="footer-links">
-        <a href="#" onClick={onNavigateToAdmin}>Admin Login</a> {/* Link Temporaneo */}
-    </div>
-</footer>
+            <footer className="app-footer">
+                <div className="footer-content">
+                    © 2026 Template Planet - All rights reserved.
+                </div>
+            </footer>
 
-      {/* MODALE */}
-      {selectedMeme && (
-        <MemeModal 
-            template={selectedMeme} 
-            onClose={() => setSelectedMeme(null)} 
-        />
-      )}
-      {showDashboard && user && (
-          <UserDashboard user={user} onClose={() => setShowDashboard(false)} />
-      )}
-    </div>
-  );
+            {/* MODALS */}
+            {selectedMeme && (
+                <MemeModal 
+                    template={selectedMeme} 
+                    onClose={() => setSelectedMeme(null)} 
+                />
+            )}
+
+            {showDashboard && user && (
+                <UserDashboard user={user} onClose={() => setShowDashboard(false)} />
+            )}
+        </div>
+    );
 };

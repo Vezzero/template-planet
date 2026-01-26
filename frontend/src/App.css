@@ -1,4 +1,3 @@
-/* Reset e Base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -428,3 +427,406 @@ button {
 .admin-actions button { flex: 1; padding: 0.5rem; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
 .btn-approve { background-color: #42b883; color: white; }
 .btn-reject { background-color: #ff4757; color: white; }
+
+/* STILE CESTINO SU CARD */
+.meme-card {
+  position: relative; /* Necessario per posizionare il bottone assoluto */
+}
+
+.btn-delete-overlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s, background-color 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.btn-delete-overlay:hover {
+  background-color: rgb(255, 0, 0);
+  transform: scale(1.1);
+}
+
+/* =========================================
+   BEAUTIFUL MEME CARD STYLES
+   ========================================= */
+
+.meme-card {
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #333;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Effetto Lift al passaggio del mouse */
+.meme-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  border-color: #555;
+}
+
+/* --- IMMAGINE --- */
+.meme-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Mantiene le card quadrate uniformi */
+  overflow: hidden;
+  background-color: #000;
+}
+
+.meme-card-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Riempie il quadrato senza deformare */
+  transition: transform 0.5s ease;
+}
+
+/* Zoom immagine on hover */
+.meme-card:hover .meme-card-image-wrapper img {
+  transform: scale(1.05);
+}
+
+/* Overlay scuro leggero on hover */
+.meme-card-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.3s;
+  pointer-events: none;
+}
+
+.meme-card:hover .meme-card-overlay {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* --- BOTTONE ELIMINA (Glassmorphism) --- */
+.btn-delete-card {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  
+  /* Stile Glass */
+  background: rgba(255, 71, 87, 0.85);
+  backdrop-filter: blur(4px);
+  color: white;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  
+  /* Animazione entrata */
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.btn-delete-card i {
+  font-size: 1.1rem;
+}
+
+/* Mostra bottone solo quando passo sopra la card */
+.meme-card:hover .btn-delete-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn-delete-card:hover {
+  background: #ff4757; /* Rosso più acceso */
+  transform: scale(1.1);
+}
+
+/* --- CONTENUTO TESTUALE --- */
+.meme-card-content {
+  padding: 12px 15px;
+  background: #1e1e1e;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.meme-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* ... se il testo è lungo */
+}
+
+/* --- TAGS (Stile Pillola/Chip) --- */
+.meme-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto; /* Spinge i tag in fondo se c'è spazio */
+}
+
+.meme-tag {
+  font-size: 0.75rem;
+  color: #aadaff;
+  background: rgba(170, 218, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+
+.meme-card:hover .meme-tag {
+  background: rgba(170, 218, 255, 0.2);
+}
+
+.meme-tag-empty {
+  font-size: 0.75rem;
+  color: #444;
+  font-style: italic;
+}
+
+/* =========================================
+   PREMIUM MODAL STYLES
+   ========================================= */
+
+/* 1. The Background Overlay */
+.modal-overlay-glass {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Darker dim */
+  backdrop-filter: blur(8px); /* Blur the website behind it */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* 2. The Modal Box */
+.modal-content-glass {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 0; /* Padding handled by children */
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh; /* Never go taller than screen */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+/* 3. Header */
+.modal-header {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  background: #252525;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.btn-icon-close {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* 4. Image Area */
+.modal-image-container {
+  flex: 1;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.modal-image-container img {
+  max-width: 100%;
+  max-height: 60vh; /* Limits image height so download button is visible */
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* 5. Footer & Actions */
+.modal-footer {
+  padding: 15px 20px;
+  background: #252525;
+  border-top: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.btn-download-large {
+  background: linear-gradient(135deg, #aadaff 0%, #42b883 100%);
+  color: #000;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.btn-download-large:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.modal-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.modal-tag-pill {
+  font-size: 0.75rem;
+  color: #888;
+  background: #1a1a1a;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid #333;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* --- FIXED HEADER STYLES --- */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px; /* Fixed height */
+  z-index: 1000;
+  background-color: rgba(30, 30, 30, 0.95); /* Semi-transparent */
+  backdrop-filter: blur(10px); /* Blur effect behind header */
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+
+/* Adjust layout to account for fixed header */
+.layout-container.with-fixed-header {
+  padding-top: 80px; /* Push content down so it doesn't hide behind header */
+  min-height: 100vh;
+}
+
+/* Sidebar needs to be sticky too if you want it to scroll with content but stay visible */
+.app-sidebar {
+  position: sticky;
+  top: 90px; /* Below the header */
+  height: calc(100vh - 90px);
+}
+
+/* --- HEADER SEARCH BAR --- */
+.header-search-container {
+  flex: 1; /* Takes available space */
+  max-width: 500px;
+  position: relative;
+  margin: 0 20px;
+}
+
+.header-search-input {
+  width: 100%;
+  padding: 10px 15px 10px 40px; /* Space for icon */
+  border-radius: 20px;
+  border: 1px solid #444;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.header-search-input:focus {
+  outline: none;
+  border-color: #42b883;
+  background-color: #333;
+  box-shadow: 0 0 0 2px rgba(66, 184, 131, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+/* --- FILTER LIST ICONS --- */
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* --- EMPTY STATE --- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  margin-top: 50px;
+}

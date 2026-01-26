@@ -27,28 +27,43 @@ export const MemeModal = ({ template, onClose }: MemeModalProps) => {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            console.error("Errore download:", error);
-            alert("Impossibile scaricare l'immagine.");
+            console.error("Download error:", error);
+            alert("Unable to download image.");
         }
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h2>{template.title}</h2>
-                <img 
-                    src={getImageUrl(template.image)} 
-                    alt={template.title} 
-                    className="modal-image" 
-                />
+        <div className="modal-overlay-glass" onClick={onClose}>
+            <div className="modal-content-glass" onClick={(e) => e.stopPropagation()}>
                 
-                <div className="button-group">
-                    <button className="btn-download" onClick={handleDownload}>
-                        Scarica Template
+                {/* HEADER: Title & Close X */}
+                <div className="modal-header">
+                    <h2 className="modal-title">{template.title}</h2>
+                    <button onClick={onClose} className="btn-icon-close">
+                        <i className="bi bi-x-lg"></i>
                     </button>
-                    <button className="btn-close" onClick={onClose}>
-                        Chiudi
+                </div>
+
+                {/* IMAGE CONTAINER */}
+                <div className="modal-image-container">
+                    <img 
+                        src={getImageUrl(template.image)} 
+                        alt={template.title} 
+                    />
+                </div>
+                
+                {/* FOOTER: Actions */}
+                <div className="modal-footer">
+                    <button className="btn-download-large" onClick={handleDownload}>
+                        <i className="bi bi-download"></i> Download Template
                     </button>
+                    
+                    {/* Optional: Add tags here if you want */}
+                    <div className="modal-tags">
+                        {template.tags.map(tag => (
+                            <span key={tag.id} className="modal-tag-pill">#{tag.name}</span>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

@@ -12,37 +12,56 @@ interface UserMenuProps {
     onMyUploadsClick: () => void;
 }
 
-export const UserMenu = ({ user, onLoginSuccess, onLogout, onAdminClick, onUploadClick, onMyUploadsClick }: UserMenuProps) => {
+export const UserMenu = ({ 
+    user, 
+    onLoginSuccess, 
+    onLogout, 
+    onAdminClick, 
+    onUploadClick, 
+    onMyUploadsClick 
+}: UserMenuProps) => {
 
-    // Funzione per simulare il login come ADMIN (vede il tasto Admin)
+    // Mock Login: ADMIN
     const fakeLoginAdmin = () => {
-        onLoginSuccess({ username: 'Super Admin', is_staff: true });
+        onLoginSuccess({ username: 'Admin', is_staff: true });
     };
 
-    // Funzione per simulare il login come UTENTE (NON vede il tasto Admin)
+    // Mock Login: USER
     const fakeLoginUser = () => {
-        onLoginSuccess({ username: 'Utente Simpatico', is_staff: false });
+        onLoginSuccess({ username: 'User', is_staff: false });
     };
 
-    // SE L'UTENTE È LOGGATO
+    // LOGGED IN STATE
     if (user) {
         return (
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span style={{ color: '#fff', fontWeight: '500' }}>Ciao, {user.username}!</span>
+                <span style={{ color: '#fff', fontWeight: '500' }}>Hi, {user.username}!</span>
                 
+                {/* My Uploads Link */}
                 <button 
                     onClick={onMyUploadsClick}
-                    style={{background: 'none', border: 'none', color: '#aadaff', cursor: 'pointer', textDecoration:'underline'}}
+                    style={{
+                        background: 'none', 
+                        border: 'none', 
+                        color: '#aadaff', 
+                        cursor: 'pointer', 
+                        textDecoration:'underline',
+                        fontSize: '0.9rem'
+                    }}
                 >
-                    I miei Upload
+                    My Uploads
                 </button>
 
-                <button className="nav-btn-upload" onClick={onUploadClick}>Carica Meme</button>
+                {/* Upload Button */}
+                <button className="nav-btn-upload" onClick={onUploadClick}>
+                    Upload Meme
+                </button>
 
-                {/* Il tasto Admin appare SOLO se l'utente è staff */}
+                {/* Admin Button (Only if staff) */}
                 {user.is_staff && (
                     <button 
                         onClick={onAdminClick} 
+                        title="Go to Admin Panel"
                         style={{
                             background: '#ff4757', 
                             color: 'white', 
@@ -54,29 +73,38 @@ export const UserMenu = ({ user, onLoginSuccess, onLogout, onAdminClick, onUploa
                             boxShadow: '0 2px 4px rgba(255, 71, 87, 0.3)'
                         }}
                     >
-                        Admin Panel
+                        Admin
                     </button>
                 )}
 
+                {/* LOGOUT ICON BUTTON - JUST THE ICON */}
                 <button 
                     onClick={onLogout} 
+                    title="Logout"
                     style={{
-                        background: 'transparent', 
-                        border: '1px solid #666', 
+                        background: 'none', 
+                        border: 'none', 
                         color: '#ccc', 
-                        padding: '0.5rem 1rem', 
-                        borderRadius: '6px', 
+                        padding: '0',
                         cursor: 'pointer',
-                        transition: 'all 0.2s'
+                        transition: 'color 0.2s',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#ff4757';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color = '#ccc';
                     }}
                 >
-                    Esci
+                    <i className="bi bi-box-arrow-right" style={{ fontSize: '1.4rem' }}></i>
                 </button>
             </div>
         );
     }
 
-    // SE L'UTENTE NON È LOGGATO (Mostra i bottoni di test)
+    // LOGGED OUT STATE
     return (
         <div style={{ display: 'flex', gap: '10px' }}>
             <button 
