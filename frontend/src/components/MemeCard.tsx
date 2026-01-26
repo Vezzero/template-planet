@@ -51,8 +51,8 @@ export const MemeCard = ({ template, onClick, isAdmin, onDelete }: MemeCardProps
                     <button 
                         className="btn-delete-card" 
                         onClick={handleDeleteClick} 
-                        title="Delete Template"
-                    > 
+                        title="Delete Meme"
+                    >
                         <i className="bi bi-trash3-fill"></i>
                     </button>
                 )}
