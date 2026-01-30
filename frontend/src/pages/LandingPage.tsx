@@ -5,6 +5,7 @@ import { MemeCard } from '../components/MemeCard';
 import { MemeModal } from '../components/MemeModal';
 import { UserMenu } from '../components/UserMenu';
 import { UserDashboard } from '../components/UserDashboard';
+import logo from '/public/MagicEraser_260130_215141.png';
 import '../App.css';
 
 interface LandingPageProps {
@@ -24,7 +25,7 @@ export const LandingPage = ({
 }: LandingPageProps) => {
     
     // STATI LAYOUT
-    const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+    const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
     
     // STATI DROPDOWN SIDEBAR (Nuovi)
     const [openSections, setOpenSections] = useState({
@@ -103,33 +104,38 @@ export const LandingPage = ({
         <div className="app-wrapper">
             
             <header className="app-header fixed-header">
-                <div className="logo-area" style={{ width: isSidebarExpanded ? '240px' : '60px', transition: 'width 0.3s' }}>
-                    <i className="bi bi-planet" style={{fontSize: '1.5rem', color: '#aadaff'}}></i>
+                <div className="logo-area">
+                    <i className="bi bi-planet" style={{ fontSize: '1.5rem', color: '#aadaff' }}></i>
+                </div>
+
+                {/* LOGO A SINISTRA DELLA SEARCH */}
+                <div className="header-brand" title="Template Planet">
+                    <img src={logo} alt="Template Planet" className="header-logo" />
                 </div>
 
                 <div className="header-search-container">
                     <i className="bi bi-search search-icon"></i>
-                    <input 
-                        type="text" 
-                        placeholder="Search templates..." 
-                        className="header-search-input"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                    <input
+                    type="text"
+                    placeholder="Search templates..."
+                    className="header-search-input"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
                 <div className="header-actions">
-                    <UserMenu 
-                        user={user}
-                        onLoginSuccess={onLogin}
-                        onLogout={onLogout}
-                        onUploadClick={onNavigateToUpload}
-                        onAdminClick={onNavigateToAdmin}
-                        onMyUploadsClick={() => setShowDashboard(true)}
+                    <UserMenu
+                    user={user}
+                    onLoginSuccess={onLogin}
+                    onLogout={onLogout}
+                    onUploadClick={onNavigateToUpload}
+                    onAdminClick={onNavigateToAdmin}
+                    onMyUploadsClick={() => setShowDashboard(true)}
                     />
                 </div>
+                </header>
 
-            </header>
 
             <div className="layout-container with-fixed-header">
                 

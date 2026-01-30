@@ -138,12 +138,11 @@ body {
 /* =========================================
    4. PREMIUM MEME CARDS (COMPACT VERSION)
    ========================================= */
-.meme-scroll-container {
+.meme-scroll-container{
   display: grid;
-  /* Ridotto da 200px a 150px per card più piccole */
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
-  gap: 1rem; /* Ridotto il gap tra le card */
-  padding-bottom: 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 colonne fisse */
+  gap: 10px;
+  padding-bottom: 1rem;
 }
 
 .meme-card {
@@ -156,12 +155,6 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-}
-
-.meme-card:hover {
-  transform: translateY(-4px); /* Movimento più sottile */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-  border-color: #555;
 }
 
 .meme-card-image-wrapper {
@@ -196,22 +189,23 @@ body {
 }
 
 .meme-card-content {
-  padding: 8px 10px; /* Padding ridotto (era 12px 15px) */
+  padding: 6px 8px; /* Padding ridotto (era 12px 15px) */
   background: #1e1e1e;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px; /* Gap ridotto */
+  gap: 3px; /* Gap ridotto */
 }
 
 .meme-card-title {
   margin: 0;
-  font-size: 0.85rem; /* Font più piccolo (era 1rem) */
+  font-size: 0.78rem; /* Font più piccolo (era 1rem) */
   font-weight: 600;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.1;
 }
 
 .meme-card-tags {
@@ -222,32 +216,23 @@ body {
 }
 
 .meme-tag {
-  font-size: 0.65rem; /* Font tag ridotto (era 0.75rem) */
+  font-size: 0.6rem; /* Font tag ridotto (era 0.75rem) */
   color: #aadaff;
   background: rgba(170, 218, 255, 0.1);
   padding: 2px 6px;
-  border-radius: 8px;
+  border-radius: 10px;
   transition: background 0.2s;
-}
-
-/* BOTTONI SU CARD (Delete & Download) RIDOTTI */
-.btn-delete-card, .btn-download-card {
-  position: absolute;
-  width: 26px; /* Ridotto da 32px */
-  height: 26px; /* Ridotto da 32px */
-  border-radius: 50%;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: all 0.2s;
 }
 
 /* Icone dentro i bottoni più piccole */
 .btn-delete-card i, .btn-download-card i {
-  font-size: 0.8rem; 
+  font-size: 0.85rem; 
+}
+
+.meme-tag-empty{
+  font-size: 0.65rem;
+  color: #888;
+  padding: 2px 6px;
 }
 
 .btn-delete-card {
@@ -258,6 +243,8 @@ body {
   color: white;
   opacity: 0;
   transform: translateY(-10px);
+  width: 24px;
+  height: 24px;
 }
 
 .meme-card:hover .btn-delete-card {
@@ -274,7 +261,8 @@ body {
   bottom: 6px; /* Più vicino al bordo */
   right: 6px;
   background: #333;
-  color: #aadaff;
+  color: #ffffff;
+  border-radius: 10px;
 }
 
 .btn-download-card:hover {
@@ -546,8 +534,8 @@ body {
 }
 
 .btn-download-large {
-  background: linear-gradient(135deg, #aadaff 0%, #42b883 100%);
-  color: #000;
+  background: #2c3b40;
+  color: #ffffff;
   border: none;
   padding: 12px;
   font-size: 1rem;
@@ -878,7 +866,6 @@ body {
   }
 }
 
-/* Add to App.css (preferably near the header/nav button styles, or at the end) */
 .btn-login {
   background: #333;
   color: #fff;
@@ -901,3 +888,58 @@ body {
   transform: translateY(1px);
 }
 
+
+.logo-area{
+  flex: 0 0 auto;
+}
+
+.header-brand{
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding-left: 0;
+}
+
+.header-logo{
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.header-search-container{
+  flex: 1 1 auto;
+  max-width: none;
+  margin: 0;
+  min-width: 0;
+}
+
+@media (max-width: 768px){
+  .header-logo{
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 768px){
+  .app-sidebar{
+    width: 200px;
+    padding: 16px;
+  }
+  .app-sidebar.collapsed{
+    width: 70px;
+    padding: 16px 8px;
+  }
+
+  .main-content{
+    margin-left: 200px !important;
+  }
+  .main-content.collapsed{
+    margin-left: 70px !important;
+  }
+}
+
+.app-footer{
+  position: relative;
+  z-index: 1200;
+}

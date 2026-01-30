@@ -73,31 +73,14 @@ export const MemeCard = ({ template, onClick, isAdmin, onDelete }: MemeCardProps
                 </div>
 
                 {/* DOWNLOAD BUTTON */}
-                <button 
+                <button
                     className="btn-download-card"
                     onClick={handleDownloadClick}
                     title="Download"
-                    style={{
-                        position: 'absolute',
-                        bottom: '10px',
-                        right: '10px',
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        border: 'none',
-                        background: '#333',
-                        color: '#aadaff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#444'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = '#333'}
-                >
-                    <i className="bi bi-download" style={{ fontSize: '1rem' }}></i>
-                </button>
+                    >
+                    <i className="bi bi-download"></i>
+                    </button>
+
             </div>
         </div>
     );
