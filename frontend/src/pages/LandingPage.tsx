@@ -129,7 +129,6 @@ export const LandingPage = ({
                         >
                             <i className="bi bi-list"></i>
                         </button>
-                        {isSidebarExpanded && <span className="sidebar-title">Menu</span>}
                     </div>
 
                     <div className="sidebar-scroll-content">
