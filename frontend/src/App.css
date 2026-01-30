@@ -87,28 +87,6 @@ body {
   display: flex;
 }
 
-/* SIDEBAR FISSA ("Incollata" sotto l'header) */
-.app-sidebar {
-  position: fixed;
-  top: 70px;       /* Inizia esattamente sotto l'header */
-  left: 0;
-  bottom: 0;       /* Si estende fino in fondo */
-  width: 260px;
-  background-color: #121212; /* O #1a1a1a per contrasto */
-  border-right: 1px solid #333;
-  padding: 2rem;
-  overflow-y: auto;
-  z-index: 900;
-}
-
-/* MAIN CONTENT (Spinto a destra) */
-.main-content {
-  margin-left: 260px; /* Lascia spazio alla sidebar */
-  padding: 90px 30px 30px 30px; /* 70px header + 20px spazio */
-  width: 100%;
-  min-height: 100vh;
-}
-
 /* FILTRI SIDEBAR */
 .filter-group h3 {
   font-size: 0.8rem;
@@ -650,42 +628,9 @@ body {
   color: white;
 }
 
-/* =========================================
-   SIDEBAR ANIMATION
-   ========================================= */
-.app-sidebar {
-  position: fixed;
-  top: 70px;
-  left: 0;
-  bottom: 0;
-  width: 260px;
-  background-color: #121212;
-  border-right: 1px solid #333;
-  padding: 2rem;
-  overflow-y: auto;
-  z-index: 900;
-  
-  /* ANIMAZIONE FLUIDA */
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateX(0); /* Default: visibile */
-}
-
 /* Quando la sidebar è chiusa, la spostiamo fuori schermo a sinistra */
 .app-sidebar.closed {
   transform: translateX(-260px); 
-}
-
-/* =========================================
-   MAIN CONTENT ANIMATION
-   ========================================= */
-.main-content {
-  margin-left: 260px; /* Spazio default per la sidebar */
-  padding: 90px 30px 30px 30px;
-  width: auto; /* Lasciamo che si adatti */
-  min-height: 100vh;
-  
-  /* ANIMAZIONE FLUIDA del margine */
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Quando la sidebar è chiusa, togliamo il margine sinistro */
@@ -882,3 +827,77 @@ body {
   border-bottom: none;
   margin-bottom: 5px;
 }
+
+/* ===== HEADER: wide search + right actions ===== */
+
+.fixed-header{
+  gap: 16px;
+}
+
+/* Questa width dinamica del logo-area la tieni inline.
+   Però su mobile la forziamo dopo. */
+.logo-area{
+  flex: 0 0 auto;
+}
+
+/* La search deve occupare tutto lo spazio disponibile */
+.header-search-container{
+  flex: 1 1 auto;
+  max-width: none;  /* <-- rimuove il limite 500px */
+  margin: 0;        /* <-- evita sprechi laterali */
+  min-width: 200px;
+}
+
+.header-search-input{
+  width: 100%;
+}
+
+/* Contenitore azioni a destra */
+.header-actions{
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Mobile: riduci il "logo-area" che ora cambia width col sidebar */
+@media (max-width: 768px){
+  .fixed-header{
+    height: 64px;
+    padding: 0 12px;
+    gap: 10px;
+  }
+
+  .logo-area{
+    width: auto !important;     /* <-- ignora l'inline style su mobile */
+    min-width: 40px;
+  }
+
+  .header-search-container{
+    min-width: 0;
+  }
+}
+
+/* Add to App.css (preferably near the header/nav button styles, or at the end) */
+.btn-login {
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.btn-login:hover {
+  background: #3a3a3a;
+  border-color: #777;
+}
+
+.btn-login:active {
+  transform: translateY(1px);
+}
+

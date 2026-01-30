@@ -42,6 +42,8 @@ export const LandingPage = ({
     const [searchTerm, setSearchTerm] = useState("");
     const [activeFilter, setActiveFilter] = useState("All"); // "All", "Trending", "New" oppure il nome di un tag
     const [showDashboard, setShowDashboard] = useState(false);
+    const [filterDownload, setFilterDownload] = useState(false);
+    const [filterRecent, setFilterRecent] = useState(false);
 
     useEffect(() => {
         fetch('/api/templates/')
@@ -64,26 +66,38 @@ export const LandingPage = ({
         } catch (error) { console.error(error); }
     };
 
-    const filteredTemplates = templates.filter((meme) => {
-        const searchLower = searchTerm.toLowerCase();
-        
-        // Filtro di ricerca testuale
-        const matchesSearch = meme.title.toLowerCase().includes(searchLower) || 
-                              meme.tags.some(tag => tag.name.toLowerCase().includes(searchLower));
+    const filteredTemplates = templates
+        .filter((meme) => {
+            const searchLower = searchTerm.toLowerCase();
+            return meme.title.toLowerCase().includes(searchLower) || 
+                   meme.tags.some(tag => tag.name.toLowerCase().includes(searchLower));
+        })
+        .sort((a, b) => {
+            
+            if (filterDownload) {
+                const downA = (a as any).downloads || 0;
+                const downB = (b as any).downloads || 0;
+                if (downB !== downA) return downB - downA;
+            }
 
-        // Filtro Sidebar (Categorie o Tag)
-        let matchesCategory = true;
-        if (activeFilter === 'Trending') {
-            matchesCategory = true; // Logica trending qui (es. views > 100)
-        } else if (activeFilter === 'New') {
-            matchesCategory = true; // Logica new qui (es. data recente)
-        } else if (activeFilter !== 'All') {
-            // Se non è una categoria standard, consideralo un TAG
-            matchesCategory = meme.tags.some(t => t.name === activeFilter);
-        }
+            if (filterRecent) {
+                const dateA = new Date(a.created_at || 0).getTime();
+                const dateB = new Date(b.created_at || 0).getTime();
+                return dateB - dateA;
+            }
 
-        return matchesSearch && matchesCategory;
-    });
+            return 0; // Nessun ordine particolare
+        });
+
+        const toggleDownload = () => {
+            setFilterDownload(!filterDownload);
+            if (!filterDownload) setFilterRecent(false);
+        };
+
+        const toggleRecent = () => {
+            setFilterRecent(!filterRecent);
+            if (!filterRecent) setFilterDownload(false);
+        };
 
     return (
         <div className="app-wrapper">
@@ -104,7 +118,7 @@ export const LandingPage = ({
                     />
                 </div>
 
-                <nav className="main-nav">
+                <div className="header-actions">
                     <UserMenu 
                         user={user}
                         onLoginSuccess={onLogin}
@@ -113,7 +127,8 @@ export const LandingPage = ({
                         onAdminClick={onNavigateToAdmin}
                         onMyUploadsClick={() => setShowDashboard(true)}
                     />
-                </nav>
+                </div>
+
             </header>
 
             <div className="layout-container with-fixed-header">
