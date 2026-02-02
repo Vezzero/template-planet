@@ -24,24 +24,21 @@ export const LandingPage = ({
     onNavigateToAdmin 
 }: LandingPageProps) => {
     
-    // STATI LAYOUT
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
     
-    // STATI DROPDOWN SIDEBAR (Nuovi)
     const [openSections, setOpenSections] = useState({
-        categories: true, // Categorie aperte di default
-        filters: true     // Filtri aperti di default
+        categories: true,
+        filters: true
     });
 
     const toggleSection = (section: 'categories' | 'filters') => {
         setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
     };
 
-    // STATI DATI
     const [templates, setTemplates] = useState<MemeTemplate[]>([]);
     const [selectedMeme, setSelectedMeme] = useState<MemeTemplate | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [activeFilter, setActiveFilter] = useState("All"); // "All", "Trending", "New" oppure il nome di un tag
+    const [activeFilter, setActiveFilter] = useState("All");
     const [showDashboard, setShowDashboard] = useState(false);
     const [filterDownload, setFilterDownload] = useState(false);
     const [filterRecent, setFilterRecent] = useState(false);
@@ -53,11 +50,9 @@ export const LandingPage = ({
             .catch((err) => console.error("Errore fetch:", err));
     }, []);
 
-    // Estrarre Tag Unici dai template caricati per il filtro "By Tag"
-    // (In un'app reale faresti una fetch dedicata /api/tags/)
     const uniqueTags = Array.from(new Set(
         templates.flatMap(t => t.tags.map(tag => tag.name))
-    )).slice(0, 10); // Limitiamo a 10 tag
+    )).slice(0, 10);
 
     const handleDelete = async (id: number) => {
         if (!window.confirm("Sei sicuro di voler eliminare questo meme?")) return;
@@ -87,7 +82,7 @@ export const LandingPage = ({
                 return dateB - dateA;
             }
 
-            return 0; // Nessun ordine particolare
+            return 0;
         });
 
         const toggleDownload = () => {
