@@ -1,0 +1,26 @@
+# deps
+node_modules/
+
+# Next.js build
+.next/
+out/
+
+# DB locale
+prisma/dev.db
+prisma/dev.db-journal
+
+# uploads locali
+public/uploads/
+
+# env con segreti
+.env
+.env.local
+.env.production
+
+# logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

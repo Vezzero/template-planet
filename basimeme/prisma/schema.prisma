@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  username      String    @unique
+  name          String?
+  image         String?
+  password      String?
+  role          String    @default("USER")
+  bio           String?
+  website       String?
+  twitter       String?
+  instagram     String?
+  banned        Boolean   @default(false)
+  points        Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts     Account[]
+  sessions     Session[]
+  bases        MemeBase[]
+  upvotes      Upvote[]
+  adminLogs    AdminLog[]
+  suggestions  Suggestion[]
+  scoreEvents  ScoreEvent[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  iconEmoji   String   @default("📁")
+  color       String   @default("#f59e0b")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  bases MemeBase[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id        String      @id @default(cuid())
+  name      String      @unique
+  slug      String      @unique
+  createdAt DateTime    @default(now())
+
+  bases MemeBaseTag[]
+
+  @@map("tags")
+}
+
+model MemeBase {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  description     String?
+  fileUrl         String
+  thumbnailUrl    String?
+  fileType        String   @default("IMAGE")
+  width           Int?
+  height          Int?
+  fileSize        Int?
+  blurHash        String?
+  status          String   @default("PENDING")
+  rejectionReason String?
+  upvotesCount    Int      @default(0)
+  downloadsCount  Int      @default(0)
+  viewsCount      Int      @default(0)
+  trendingScore   Float    @default(0)
+  isTrending      Boolean  @default(false)
+  authorId        String
+  categoryId      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  approvedAt      DateTime?
+
+  author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  tags        MemeBaseTag[]
+  upvotes     Upvote[]
+  suggestions Suggestion[]
+
+  @@index([status])
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([trendingScore])
+  @@index([createdAt])
+  @@map("meme_bases")
+}
+
+model MemeBaseTag {
+  memeBaseId String
+  tagId      String
+
+  memeBase MemeBase @relation(fields: [memeBaseId], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([memeBaseId, tagId])
+  @@map("meme_base_tags")
+}
+
+model Upvote {
+  id         String   @id @default(cuid())
+  userId     String
+  memeBaseId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memeBase MemeBase @relation(fields: [memeBaseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, memeBaseId])
+  @@map("upvotes")
+}
+
+model Suggestion {
+  id                  String    @id @default(cuid())
+  userId              String
+  memeBaseId          String
+  type                String    @default("EDIT")   // "EDIT" | "REMOVE"
+  proposedTitle       String?
+  proposedDescription String?
+  proposedCategoryId  String?
+  proposedTags        String?   // JSON: ["tag1","tag2"]
+  message             String?
+  status              String    @default("PENDING") // "PENDING" | "APPROVED" | "REJECTED"
+  adminNote           String?
+  resolvedById        String?
+  resolvedAt          DateTime?
+  createdAt           DateTime  @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memeBase MemeBase @relation(fields: [memeBaseId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([memeBaseId])
+  @@index([userId])
+  @@map("suggestions")
+}
+
+model ScoreEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  points    Int
+  reason    String
+  refId     String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("score_events")
+}
+
+model AdminLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  targetType String
+  targetId   String?
+  details    String?
+  createdAt  DateTime @default(now())
+
+  admin User @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([createdAt])
+  @@map("admin_logs")
+}
