@@ -1,8 +1,6 @@
 import Link from "next/link";
-import { CategoryPill } from "@/components/meme/CategoryPill";
 import type { CategoryWithCount, TagWithCount } from "@/types";
 import { formatNumber } from "@/lib/utils";
-import { ExternalLink } from "lucide-react";
 
 type Props = {
   categories: CategoryWithCount[];
@@ -11,62 +9,89 @@ type Props = {
 
 export function Sidebar({ categories, popularTags }: Props) {
   return (
-    <aside className="space-y-6">
-      {/* Memefattori banner */}
-      <a
-        href="https://memefattori.it"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-600/10 border border-amber-500/30 p-4 hover:border-amber-400/50 transition-colors"
+    <aside className="space-y-12">
+      {/* Editorial quote */}
+      <blockquote
+        className="pl-5 font-serif italic"
+        style={{
+          borderLeft: "2px solid var(--acid)",
+          fontSize: "15px",
+          color: "var(--paper)",
+          lineHeight: 1.5,
+        }}
       >
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-2xl">🧃</span>
-          <div>
-            <p className="font-bold text-white text-sm">Memefattori</p>
-            <p className="text-xs text-zinc-400">Powered by</p>
-          </div>
-          <ExternalLink className="h-3.5 w-3.5 text-zinc-500 ml-auto" />
-        </div>
-        <p className="text-xs text-zinc-400 leading-relaxed">
-          La community italiana dei creatori di meme. Unisciti anche tu!
-        </p>
-      </a>
+        &ldquo;Il meme è la poesia del presente.&rdquo;
+        <footer
+          className="mt-3 font-mono uppercase tracking-[0.2em]"
+          style={{ fontSize: "9px", color: "var(--ghost)", fontStyle: "normal" }}
+        >
+          / memefattori, 2024
+        </footer>
+      </blockquote>
 
-      {/* Categorie */}
-      <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
-        <h3 className="font-bold text-white mb-3 text-sm">Categorie</h3>
-        <div className="space-y-1">
+      {/* Categories */}
+      <div>
+        <h3
+          className="font-mono uppercase tracking-[0.2em] mb-4 pb-3"
+          style={{
+            fontSize: "10px",
+            color: "var(--ghost)",
+            borderBottom: "1px solid rgba(90, 86, 78, 0.3)",
+          }}
+        >
+          § categorie
+        </h3>
+        <ul className="space-y-2.5">
           {categories.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/categoria/${cat.slug}`}
-              className="flex items-center justify-between rounded-lg px-2 py-1.5 hover:bg-zinc-800 transition-colors group"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-base">{cat.iconEmoji}</span>
-                <span className="text-sm text-zinc-300 group-hover:text-white transition-colors">{cat.name}</span>
-              </div>
-              <span className="text-xs text-zinc-600 tabular-nums">
-                {formatNumber(cat._count.bases)}
-              </span>
-            </Link>
+            <li key={cat.id}>
+              <Link
+                href={`/categoria/${cat.slug}`}
+                className="group flex items-baseline justify-between gap-3"
+              >
+                <span
+                  className="font-serif italic transition-colors group-hover:[color:var(--acid)]"
+                  style={{ fontSize: "14px", color: "var(--paper)" }}
+                >
+                  {cat.iconEmoji} {cat.name}
+                </span>
+                <span
+                  className="font-mono tabular-nums shrink-0"
+                  style={{ fontSize: "10px", color: "var(--ghost)" }}
+                >
+                  {formatNumber(cat._count.bases).padStart(3, "0")}
+                </span>
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
 
-      {/* Tag popolari */}
+      {/* Tag cloud */}
       {popularTags.length > 0 && (
-        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
-          <h3 className="font-bold text-white mb-3 text-sm">Tag popolari</h3>
-          <div className="flex flex-wrap gap-2">
+        <div>
+          <h3
+            className="font-mono uppercase tracking-[0.2em] mb-4 pb-3"
+            style={{
+              fontSize: "10px",
+              color: "var(--ghost)",
+              borderBottom: "1px solid rgba(90, 86, 78, 0.3)",
+            }}
+          >
+            § tag popolari
+          </h3>
+          <div className="flex flex-wrap gap-1.5">
             {popularTags.map((tag) => (
               <Link
                 key={tag.id}
                 href={`/tag/${tag.slug}`}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-400 text-xs hover:bg-zinc-700 hover:text-white transition-colors border border-zinc-700 hover:border-zinc-600"
+                className="py-1 px-2 font-mono uppercase tracking-[0.1em] transition-all hover:[border-color:var(--paper)] hover:[background-color:rgba(245,241,232,0.04)]"
+                style={{
+                  fontSize: "10px",
+                  border: "1px solid rgba(90, 86, 78, 0.4)",
+                  color: "var(--paper)",
+                }}
               >
                 #{tag.name}
-                <span className="text-zinc-600">{formatNumber(tag._count.bases)}</span>
               </Link>
             ))}
           </div>

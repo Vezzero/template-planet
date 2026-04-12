@@ -10,7 +10,7 @@ export function ShareButtons({ slug, title }: Props) {
   const [copied, setCopied] = useState(false);
   const url = typeof window !== "undefined" ? `${window.location.origin}/base/${slug}` : `/base/${slug}`;
   const encoded = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(`${title} — BasiMeme.it`);
+  const encodedTitle = encodeURIComponent(`${title} - BasiMeme.it`);
 
   const copy = async () => {
     await navigator.clipboard.writeText(url);

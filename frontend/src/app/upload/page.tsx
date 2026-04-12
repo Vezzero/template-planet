@@ -51,7 +51,7 @@ export default function UploadPage() {
       let publicUrl: string;
       let fileType: string;
 
-      // 1. Prova presigned URL (R2) — fallback su upload locale
+      // 1. Prova presigned URL (R2) - fallback su upload locale
       const presignRes = await fetch("/api/upload/presign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -195,7 +195,7 @@ export default function UploadPage() {
             onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
             className="w-full rounded-lg bg-zinc-900 border border-zinc-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
           >
-            <option value="">— Seleziona una categoria —</option>
+            <option value="">- Seleziona una categoria -</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.iconEmoji} {cat.name}

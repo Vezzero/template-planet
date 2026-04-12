@@ -106,7 +106,7 @@ export default async function AdminSuggerimentiPage() {
                       {s.proposedDescription !== null && s.proposedDescription !== undefined && (
                         <tr>
                           <td className="py-2.5 pr-3 text-zinc-500 text-xs align-top">Descr.</td>
-                          <td className="py-2.5 pr-3 text-zinc-400 align-top text-xs max-w-[200px]">{s.memeBase.description ?? "—"}</td>
+                          <td className="py-2.5 pr-3 text-zinc-400 align-top text-xs max-w-[200px]">{s.memeBase.description ?? "-"}</td>
                           <td className="py-2.5 text-center text-zinc-600 align-top">→</td>
                           <td className="py-2.5 pl-3 text-white text-xs align-top">{s.proposedDescription}</td>
                         </tr>
@@ -114,7 +114,7 @@ export default async function AdminSuggerimentiPage() {
                       {s.proposedCategoryId && (
                         <tr>
                           <td className="py-2.5 pr-3 text-zinc-500 text-xs align-top">Cat.</td>
-                          <td className="py-2.5 pr-3 text-zinc-400 align-top">{s.memeBase.category?.name ?? "—"}</td>
+                          <td className="py-2.5 pr-3 text-zinc-400 align-top">{s.memeBase.category?.name ?? "-"}</td>
                           <td className="py-2.5 text-center text-zinc-600 align-top">→</td>
                           <td className="py-2.5 pl-3 text-white align-top font-medium">{s.proposedCategoryId}</td>
                         </tr>
@@ -123,7 +123,7 @@ export default async function AdminSuggerimentiPage() {
                         <tr>
                           <td className="py-2.5 pr-3 text-zinc-500 text-xs align-top">Tag</td>
                           <td className="py-2.5 pr-3 text-zinc-400 align-top text-xs">
-                            {s.memeBase.tags.map((t) => `#${t.tag.name}`).join(" ") || "—"}
+                            {s.memeBase.tags.map((t) => `#${t.tag.name}`).join(" ") || "-"}
                           </td>
                           <td className="py-2.5 text-center text-zinc-600 align-top">→</td>
                           <td className="py-2.5 pl-3 text-white text-xs align-top">

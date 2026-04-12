@@ -173,7 +173,7 @@ export function SuggestEditModal({ memeBaseId, currentTitle, currentDescription,
                       onChange={(e) => setProposedCategoryId(e.target.value)}
                       className="w-full rounded-lg bg-zinc-800 border border-zinc-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
                     >
-                      <option value="">— Mantieni categoria attuale —</option>
+                      <option value="">- Mantieni categoria attuale -</option>
                       {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                           {cat.iconEmoji} {cat.name}

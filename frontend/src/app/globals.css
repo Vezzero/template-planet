@@ -1,98 +1,249 @@
 @import "tailwindcss";
 
+/* ── Design tokens ─────────────────────────────────────────── */
 :root {
-  --background: #09090b;
-  --foreground: #fafafa;
+  /* Colors - editorial zine palette */
+  --ink:     #0a0908;   /* background: not pure black, printed paper feel */
+  --paper:   #f5f1e8;   /* cream editorial accent */
+  --acid:    #d4ff00;   /* electric yellow, the only accent */
+  --blood:   #8b1a1a;   /* faded blood red, hover/secondary */
+  --shadow:  #1a1917;   /* warm zinc */
+  --ghost:   #5a564e;   /* mid-tone secondary text */
+
+  /* Fonts - served via next/font variables */
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-serif:   var(--font-fraunces), Georgia, serif;
+  --font-mono:    var(--font-jetbrains), "SF Mono", ui-monospace, monospace;
+
+  /* Legacy aliases to avoid breaking other pages */
+  --background: var(--ink);
+  --foreground: var(--paper);
 }
 
+* { box-sizing: border-box; }
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Inter, system-ui, sans-serif;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-serif);
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── Utility font classes ──────────────────────────────────── */
+.font-display { font-family: var(--font-display); letter-spacing: -0.04em; }
+.font-serif   { font-family: var(--font-serif); }
+.font-mono    { font-family: var(--font-mono); letter-spacing: 0.02em; }
+
 /* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #18181b; }
-::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #52525b; }
+::-webkit-scrollbar-track { background: var(--shadow); }
+::-webkit-scrollbar-thumb { background: var(--ghost); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--paper); }
 
 /* ── Selection ─────────────────────────────────────────────── */
-::selection { background: #f59e0b33; color: #fbbf24; }
+::selection { background: var(--acid); color: var(--ink); }
 
-/* ── Gradient text ─────────────────────────────────────────── */
-.gradient-text {
-  background: linear-gradient(135deg, #fbbf24 0%, #fb923c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* ── Focus ring ────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--acid);
+  outline-offset: 2px;
 }
 
-/* ── Noise texture overlay (subtle) ───────────────────────── */
-.noise::after {
-  content: "";
+/* ── Scrollbar hide ────────────────────────────────────────── */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   HERO EDITORIAL — animations, textures, cursor
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Film grain ────────────────────────────────────────────── */
+@keyframes grain-shift {
+  0%   { transform: translate(0, 0); }
+  10%  { transform: translate(-2%, -2%); }
+  20%  { transform: translate(2%, 1%); }
+  30%  { transform: translate(-1%, 3%); }
+  40%  { transform: translate(3%, -1%); }
+  50%  { transform: translate(-3%, 2%); }
+  60%  { transform: translate(2%, -3%); }
+  70%  { transform: translate(-2%, 1%); }
+  80%  { transform: translate(1%, 2%); }
+  90%  { transform: translate(-1%, -2%); }
+  100% { transform: translate(0, 0); }
+}
+.grain {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: grain-shift 0.5s steps(1) infinite;
+  z-index: 2;
+}
+
+/* ── CRT scanline pass ─────────────────────────────────────── */
+@keyframes scanline-pass {
+  0%   { transform: translateY(-10vh); opacity: 0; }
+  5%   { opacity: 0.06; }
+  50%  { transform: translateY(45vh); opacity: 0.08; }
+  95%  { opacity: 0.03; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+.scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(245, 241, 232, 0.12) 50%,
+    transparent
+  );
+  pointer-events: none;
+  animation: scanline-pass 8s ease-in-out infinite;
+  animation-delay: 4s;
+  z-index: 3;
+}
+
+/* ── Clip-path reveal (title entrance) ─────────────────────── */
+@keyframes clip-reveal {
+  from { clip-path: inset(100% 0 0 0); transform: translateY(20px); }
+  to   { clip-path: inset(0 0 0 0);   transform: translateY(0); }
+}
+.clip-reveal {
+  animation: clip-reveal 0.9s cubic-bezier(0.77, 0, 0.18, 1) both;
+}
+
+/* ── Scale bounce (dot + .it) ──────────────────────────────── */
+@keyframes scale-bounce {
+  0%   { transform: scale(0);   opacity: 0; }
+  60%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+.scale-bounce {
+  animation: scale-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Rotate in (meme figure) ───────────────────────────────── */
+@keyframes rotate-in {
+  from { transform: rotate(-24deg) scale(0.8); opacity: 0; }
+  to   { transform: rotate(-8deg)  scale(1);   opacity: 1; }
+}
+.rotate-in {
+  animation: rotate-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Underline draw (search) ───────────────────────────────── */
+@keyframes underline-draw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.underline-draw {
+  transform-origin: left;
+  animation: underline-draw 0.7s cubic-bezier(0.77, 0, 0.18, 1) both;
+}
+
+/* ── Fade up ───────────────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ── Typewriter (eyebrow) ──────────────────────────────────── */
+@keyframes typewriter {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+.typewriter {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typewriter 0.9s steps(36, end) both;
+}
+
+/* ── Caret blink ───────────────────────────────────────────── */
+@keyframes caret-blink {
+  0%, 50%   { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.caret-blink { animation: caret-blink 0.9s steps(1) infinite; }
+
+/* ── Counter fade (stats) ──────────────────────────────────── */
+.counter-fade { animation: fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ── Custom cursor ─────────────────────────────────────────── */
+.hero-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--acid);
+  border-radius: 9999px;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.22s cubic-bezier(0.2, 0, 0.2, 1),
+              height 0.22s cubic-bezier(0.2, 0, 0.2, 1),
+              background-color 0.22s ease;
+  will-change: transform, width, height;
+}
+.hero-cursor.is-hover {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(212, 255, 0, 0.12);
+}
+.hero-cursor.is-hover::after {
+  content: "click";
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  border-radius: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--acid);
+}
+@media (hover: none), (pointer: coarse) {
+  .hero-cursor { display: none; }
 }
 
-/* ── Skeleton shimmer ──────────────────────────────────────── */
+/* ── Skeleton shimmer (legacy) ─────────────────────────────── */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
+  0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, #27272a 25%, #3f3f46 50%, #27272a 75%);
+  background: linear-gradient(90deg, var(--shadow) 25%, var(--ghost) 50%, var(--shadow) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-/* ── Animations ────────────────────────────────────────────── */
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in { animation: fade-in 0.25s ease-out both; }
-
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* ── Fade-in helpers (legacy) ──────────────────────────────── */
+@keyframes fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in  { animation: fade-in 0.25s ease-out both; }
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 .animate-slide-up { animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-@keyframes scale-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
+@keyframes scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 .animate-scale-in { animation: scale-in 0.2s ease-out both; }
 
-/* ── Card glow on hover ────────────────────────────────────── */
-.card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-}
+.card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+.card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
 
-/* ── Hero dot pattern ──────────────────────────────────────── */
-.dot-pattern {
-  background-image: radial-gradient(circle, #27272a 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-/* ── Gradient border ───────────────────────────────────────── */
-.gradient-border {
-  border: 1px solid transparent;
-  background: linear-gradient(var(--background), var(--background)) padding-box,
-    linear-gradient(135deg, #f59e0b44, #fb923c22, #8b5cf611) border-box;
-}
-
-/* ── Focus ring ────────────────────────────────────────────── */
-*:focus-visible {
-  outline: 2px solid #f59e0b;
-  outline-offset: 2px;
+/* ── Reduced motion ────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .grain, .scanline, .hero-cursor, .caret-blink { display: none; }
+  *, *::before, *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.001s !important;
+  }
 }

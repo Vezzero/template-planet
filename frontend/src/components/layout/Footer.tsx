@@ -2,53 +2,152 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="border-t border-zinc-800 bg-zinc-950 mt-16">
-      <div className="max-w-7xl mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer
+      className="relative mt-0"
+      style={{
+        borderTop: "1px solid var(--ghost)",
+        backgroundColor: "var(--ink)",
+      }}
+    >
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-7 w-7 rounded-lg bg-amber-400 text-black font-black text-sm flex items-center justify-center">BM</div>
-              <span className="font-black text-white text-lg">BasiMeme.it</span>
+            <div className="flex items-baseline gap-2 mb-4">
+              <span
+                className="font-serif italic leading-none"
+                style={{ fontSize: "22px", color: "var(--paper)" }}
+              >
+                basimeme
+              </span>
+              <span
+                className="inline-block rounded-full"
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  backgroundColor: "var(--acid)",
+                }}
+                aria-hidden="true"
+              />
             </div>
-            <p className="text-zinc-500 text-sm leading-relaxed">
+            <p
+              className="font-serif italic leading-relaxed mb-6 max-w-xs"
+              style={{ fontSize: "14px", color: "var(--ghost)" }}
+            >
               La libreria italiana di template meme. Trova, condividi e usa le migliori basi per i tuoi meme.
             </p>
-            <p className="text-zinc-600 text-xs mt-3">
-              Powered by{" "}
-              <a href="https://memefattori.it" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-amber-300 font-semibold">
-                Memefattori
+            <p
+              className="font-mono uppercase tracking-[0.2em]"
+              style={{ fontSize: "10px", color: "var(--ghost)" }}
+            >
+              powered by{" "}
+              <a
+                href="https://memefattori.it"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:[color:var(--paper)] transition-colors"
+                style={{ color: "var(--paper)" }}
+              >
+                memefattori
               </a>
             </p>
           </div>
 
-          {/* Links */}
+          {/* Esplora */}
           <div>
-            <h4 className="text-white font-semibold mb-3 text-sm">Esplora</h4>
-            <ul className="space-y-2 text-sm text-zinc-500">
-              <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link href="/cerca" className="hover:text-white transition-colors">Cerca</Link></li>
-              <li><Link href="/upload" className="hover:text-white transition-colors">Carica una base</Link></li>
-              <li><Link href="/?sort=trending" className="hover:text-white transition-colors">Trending</Link></li>
-              <li><Link href="/?sort=newest" className="hover:text-white transition-colors">Nuove</Link></li>
+            <h4
+              className="font-mono uppercase tracking-[0.2em] mb-5 pb-2"
+              style={{
+                fontSize: "10px",
+                color: "var(--ghost)",
+                borderBottom: "1px solid rgba(90, 86, 78, 0.3)",
+              }}
+            >
+              01 / esplora
+            </h4>
+            <ul className="space-y-2.5">
+              {[
+                { href: "/", label: "catalogo" },
+                { href: "/classifiche", label: "classifiche" },
+                { href: "/upload", label: "carica una base" },
+                { href: "/?sort=trending", label: "trending" },
+                { href: "/?sort=newest", label: "nuove" },
+              ].map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="font-serif italic transition-colors hover:[color:var(--acid)]"
+                    style={{ fontSize: "14px", color: "var(--paper)" }}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Legale */}
+          {/* Info */}
           <div>
-            <h4 className="text-white font-semibold mb-3 text-sm">Info</h4>
-            <ul className="space-y-2 text-sm text-zinc-500">
-              <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
-              <li><Link href="/termini" className="hover:text-white transition-colors">Termini di servizio</Link></li>
-              <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy policy</Link></li>
-              <li><a href="mailto:ciao@basimeme.it" className="hover:text-white transition-colors">Contattaci</a></li>
+            <h4
+              className="font-mono uppercase tracking-[0.2em] mb-5 pb-2"
+              style={{
+                fontSize: "10px",
+                color: "var(--ghost)",
+                borderBottom: "1px solid rgba(90, 86, 78, 0.3)",
+              }}
+            >
+              02 / info
+            </h4>
+            <ul className="space-y-2.5">
+              {[
+                { href: "/about", label: "about" },
+                { href: "/termini", label: "termini di servizio" },
+                { href: "/privacy", label: "privacy policy" },
+              ].map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="font-serif italic transition-colors hover:[color:var(--acid)]"
+                    style={{ fontSize: "14px", color: "var(--paper)" }}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <a
+                  href="mailto:ciao@basimeme.it"
+                  className="font-serif italic transition-colors hover:[color:var(--acid)]"
+                  style={{ fontSize: "14px", color: "var(--paper)" }}
+                >
+                  contattaci
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-zinc-800 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-600">
-          <p>© {new Date().getFullYear()} BasiMeme.it — Tutti i diritti riservati</p>
-          <p>Made with 🧃 in Italia</p>
+        <div
+          className="mt-14 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+          style={{ borderTop: "1px solid rgba(90, 86, 78, 0.3)" }}
+        >
+          <p
+            className="font-mono uppercase tracking-[0.2em]"
+            style={{ fontSize: "10px", color: "var(--ghost)" }}
+          >
+            © {new Date().getFullYear()} / basimeme.it / tutti i diritti riservati
+          </p>
+          <p
+            className="font-mono uppercase tracking-[0.2em] flex items-center gap-1.5"
+            style={{ fontSize: "10px", color: "var(--ghost)" }}
+          >
+            made with
+            <span
+              className="inline-block rounded-full"
+              style={{ width: "6px", height: "6px", backgroundColor: "var(--acid)" }}
+            />
+            in italia
+          </p>
         </div>
       </div>
     </footer>

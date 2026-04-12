@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cat = await db.category.findUnique({ where: { slug } });
   if (!cat) return { title: "Categoria non trovata" };
-  return { title: `${cat.iconEmoji} ${cat.name} — Basi meme` };
+  return { title: `${cat.iconEmoji} ${cat.name} - Basi meme` };
 }
 
 export default async function CategoryPage({ params }: Props) {

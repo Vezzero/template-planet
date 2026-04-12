@@ -3,37 +3,43 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, Download, Eye, Copy, Check, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import { formatNumber, timeAgo } from "@/lib/utils";
-import { TrendingBadge } from "./TrendingBadge";
-import { FileTypeBadge } from "./FileTypeBadge";
 import type { MemeBaseWithRelations } from "@/types";
 
 type Props = {
   meme: MemeBaseWithRelations;
   onUpvote?: (id: string, currentlyUpvoted: boolean) => Promise<void>;
   isLoggedIn?: boolean;
+  index?: number;
 };
 
-export function MemeCard({ meme, onUpvote, isLoggedIn }: Props) {
+export function MemeCard({ meme, onUpvote, isLoggedIn, index }: Props) {
   const [copied, setCopied] = useState(false);
   const [upvoted, setUpvoted] = useState(meme._userHasUpvoted ?? false);
   const [upvoteCount, setUpvoteCount] = useState(meme.upvotesCount);
   const [upvoting, setUpvoting] = useState(false);
+  const [upvoteBounce, setUpvoteBounce] = useState(false);
 
   const handleUpvote = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!isLoggedIn) { window.location.href = "/auth/login"; return; }
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      window.location.href = "/auth/login";
+      return;
+    }
     if (!onUpvote || upvoting) return;
     setUpvoting(true);
+    setUpvoteBounce(true);
+    setTimeout(() => setUpvoteBounce(false), 400);
     const wasUpvoted = upvoted;
     setUpvoted(!wasUpvoted);
-    setUpvoteCount((c) => wasUpvoted ? c - 1 : c + 1);
+    setUpvoteCount((c) => (wasUpvoted ? c - 1 : c + 1));
     try {
       await onUpvote(meme.id, wasUpvoted);
     } catch {
       setUpvoted(wasUpvoted);
-      setUpvoteCount((c) => wasUpvoted ? c + 1 : c - 1);
+      setUpvoteCount((c) => (wasUpvoted ? c + 1 : c - 1));
     } finally {
       setUpvoting(false);
     }
@@ -41,127 +47,204 @@ export function MemeCard({ meme, onUpvote, isLoggedIn }: Props) {
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.preventDefault();
-    await navigator.clipboard.writeText(`${window.location.origin}/base/${meme.slug}`);
+    e.stopPropagation();
+    await navigator.clipboard.writeText(
+      `${window.location.origin}/base/${meme.slug}`
+    );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const thumbnailSrc = meme.thumbnailUrl || meme.fileUrl;
+  const cardIndex = (index ?? 0) + 1;
+  const indexLabel = String(cardIndex).padStart(2, "0");
 
   return (
-    <Link href={`/base/${meme.slug}`} className="group block">
-      <article className="rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden card-hover hover:border-zinc-700">
-        {/* ── Thumbnail ── */}
-        <div className="relative aspect-video bg-zinc-950 overflow-hidden">
-          {meme.fileType === "VIDEO" ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
-              <div className="h-12 w-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm">
-                <Play className="h-5 w-5 text-white fill-white ml-0.5" />
+    <>
+      <Link
+        href={`/base/${meme.slug}`}
+        className="meme-card-root group block"
+        data-cursor-hover
+      >
+        <article>
+          {/* Media */}
+          <div className="meme-card-media relative aspect-[4/5] overflow-hidden">
+            {meme.fileType === "VIDEO" ? (
+              <div
+                className="absolute inset-0 flex items-center justify-center"
+                style={{ backgroundColor: "var(--shadow)" }}
+              >
+                <div
+                  className="h-14 w-14 rounded-full flex items-center justify-center"
+                  style={{ border: "1px solid var(--paper)" }}
+                >
+                  <Play
+                    className="h-5 w-5 ml-0.5"
+                    style={{ color: "var(--paper)", fill: "var(--paper)" }}
+                  />
+                </div>
               </div>
-            </div>
-          ) : (
-            <Image
-              src={thumbnailSrc}
-              alt={meme.title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              unoptimized={meme.fileType === "GIF"}
-            />
-          )}
-
-          {/* Hover overlay — show tags */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-2">
-            <div className="flex flex-wrap gap-1">
-              {meme.tags.slice(0, 3).map(({ tag }) => (
-                <span key={tag.id} className="text-[10px] text-white/80 bg-black/50 px-1.5 py-0.5 rounded-md border border-white/10">
-                  #{tag.name}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Badges top-left */}
-          <div className="absolute top-2 left-2 flex gap-1.5">
-            <FileTypeBadge fileType={meme.fileType} />
-            {meme.isTrending && <TrendingBadge />}
-          </div>
-
-          {/* Category pill top-right */}
-          {meme.category && (
-            <div
-              className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full border"
-              style={{
-                color: meme.category.color,
-                borderColor: `${meme.category.color}40`,
-                background: `${meme.category.color}15`,
-              }}
-              onClick={(e) => { e.preventDefault(); window.location.href = `/categoria/${meme.category!.slug}`; }}
-            >
-              {meme.category.iconEmoji}
-            </div>
-          )}
-        </div>
-
-        {/* ── Body ── */}
-        <div className="p-3">
-          <h3 className="font-bold text-white text-sm leading-tight line-clamp-2 mb-2.5 group-hover:text-amber-400 transition-colors duration-150">
-            {meme.title}
-          </h3>
-
-          {/* Stats row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5 text-[11px] text-zinc-500">
-              <span className="flex items-center gap-1">
-                <Eye className="h-3 w-3" />{formatNumber(meme.viewsCount)}
-              </span>
-              <span className="flex items-center gap-1">
-                <Download className="h-3 w-3" />{formatNumber(meme.downloadsCount)}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-0.5" onClick={(e) => e.preventDefault()}>
-              <button
-                className={`h-7 px-2 flex items-center gap-1 rounded-lg text-xs border transition-all ${
-                  upvoted
-                    ? "text-amber-400 bg-amber-400/10 border-amber-400/25 font-semibold"
-                    : "text-zinc-500 border-transparent hover:text-amber-400 hover:bg-amber-400/5"
-                }`}
-                onClick={handleUpvote}
-                title="Upvota"
-              >
-                <Heart className={`h-3.5 w-3.5 transition-transform ${upvoted ? "fill-current scale-110" : ""}`} />
-                <span>{formatNumber(upvoteCount)}</span>
-              </button>
-
-              <button
-                className="h-7 w-7 flex items-center justify-center rounded-lg text-zinc-600 hover:text-zinc-300 transition-colors"
-                onClick={handleCopy}
-                title="Copia link"
-              >
-                {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Author */}
-          <div className="mt-2.5 pt-2.5 border-t border-zinc-800/60 flex items-center gap-2">
-            {meme.author.image ? (
-              <Image src={meme.author.image} alt={meme.author.username} width={18} height={18} className="rounded-full" />
             ) : (
-              <div className="h-4.5 w-4.5 h-[18px] w-[18px] rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px] font-bold">
-                {meme.author.username[0].toUpperCase()}
-              </div>
+              <Image
+                src={thumbnailSrc}
+                alt={meme.title}
+                fill
+                className="meme-card-img object-cover"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                loading="lazy"
+                unoptimized={meme.fileType === "GIF"}
+              />
             )}
-            <span className="text-[11px] text-zinc-500 truncate flex-1">
-              <Link href={`/u/${meme.author.username}`} className="hover:text-zinc-300 transition-colors" onClick={(e) => e.stopPropagation()}>
-                @{meme.author.username}
-              </Link>
-            </span>
-            <span className="text-[11px] text-zinc-700 shrink-0">{timeAgo(meme.createdAt)}</span>
+
+            {/* Copy button */}
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="copy-btn absolute top-3 right-3 z-[2] font-mono uppercase tracking-[0.15em] px-2 py-1"
+              style={{
+                fontSize: "9px",
+                color: "var(--paper)",
+                backgroundColor: "rgba(10, 9, 8, 0.75)",
+                border: "1px solid rgba(245, 241, 232, 0.2)",
+                backdropFilter: "blur(6px)",
+                WebkitBackdropFilter: "blur(6px)",
+                transition: "border-color 200ms ease, color 200ms ease",
+              }}
+              aria-label="copia link"
+            >
+              {copied ? "✓ copiato" : "↗ copia"}
+            </button>
+
+            {/* Hover overlay */}
+            <div
+              className="meme-card-overlay absolute inset-0 flex items-end p-4"
+              style={{ backgroundColor: "rgba(10, 9, 8, 0.62)" }}
+            >
+              <div className="space-y-2">
+                <p
+                  className="font-mono uppercase tracking-[0.2em]"
+                  style={{
+                    fontSize: "9px",
+                    color: "rgba(245, 241, 232, 0.7)",
+                  }}
+                >
+                  @{meme.author.username} · {timeAgo(meme.createdAt)}
+                </p>
+                <div className="flex flex-wrap gap-x-2 gap-y-1">
+                  {meme.tags.slice(0, 5).map(({ tag }) => (
+                    <span
+                      key={tag.id}
+                      className="font-mono"
+                      style={{
+                        fontSize: "9px",
+                        color: "rgba(245, 241, 232, 0.7)",
+                      }}
+                    >
+                      #{tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </article>
-    </Link>
+
+          {/* Footer */}
+          <div className="pt-4">
+            <div className="flex items-baseline gap-2 mb-2">
+              <span
+                className="font-mono uppercase tracking-[0.2em] shrink-0"
+                style={{ fontSize: "9px", color: "var(--ghost)" }}
+              >
+                {indexLabel} /
+              </span>
+              <h3
+                className="meme-card-title font-serif line-clamp-1 flex-1 min-w-0"
+                style={{
+                  fontSize: "16px",
+                  color: "var(--paper)",
+                  lineHeight: 1.3,
+                  transition: "color 200ms ease",
+                }}
+              >
+                {meme.title.toLowerCase()}
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
+              {meme.category && (
+                <>
+                  <span
+                    className="font-mono uppercase tracking-[0.15em]"
+                    style={{ fontSize: "10px", color: "var(--ghost)" }}
+                  >
+                    {meme.category.name}
+                  </span>
+                  <span
+                    className="inline-block rounded-full"
+                    style={{
+                      width: "2px",
+                      height: "2px",
+                      backgroundColor: "var(--ghost)",
+                    }}
+                    aria-hidden="true"
+                  />
+                </>
+              )}
+              <button
+                type="button"
+                onClick={handleUpvote}
+                className="upvote-btn inline-flex items-center gap-1 font-mono"
+                style={{
+                  fontSize: "11px",
+                  color: upvoted ? "var(--acid)" : "var(--ghost)",
+                  transition: "color 200ms ease",
+                }}
+                aria-label={upvoted ? "rimuovi voto" : "vota"}
+              >
+                <span
+                  style={{
+                    fontSize: "10px",
+                    display: "inline-block",
+                    transform: upvoteBounce ? "scale(1.4)" : "scale(1)",
+                    transition: "transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                >
+                  ▲
+                </span>
+                {formatNumber(upvoteCount)}
+              </button>
+            </div>
+          </div>
+        </article>
+      </Link>
+
+      <style jsx>{`
+        .meme-card-root :global(.meme-card-media) {
+          background-color: var(--shadow);
+          border: 1px solid rgba(90, 86, 78, 0.35);
+          transition: border-color 240ms ease;
+        }
+        .meme-card-root:hover :global(.meme-card-media) {
+          border-color: var(--paper);
+        }
+        .meme-card-root :global(.meme-card-img) {
+          filter: contrast(1.05) saturate(0.92);
+          transition: filter 400ms ease;
+        }
+        .meme-card-root:hover :global(.meme-card-img) {
+          filter: contrast(1.08) saturate(1.05);
+        }
+        .meme-card-root :global(.meme-card-overlay) {
+          opacity: 0;
+          transition: opacity 300ms ease;
+          pointer-events: none;
+        }
+        .meme-card-root:hover :global(.meme-card-overlay) {
+          opacity: 1;
+        }
+        .meme-card-root :global(.copy-btn):hover {
+          border-color: var(--paper) !important;
+        }
+      `}</style>
+    </>
   );
 }

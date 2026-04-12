@@ -22,14 +22,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const meme = await getMemeBySlug(slug);
   if (!meme) return { title: "Base non trovata" };
-  const description = meme.description ?? `Template meme "${meme.title}" — scarica gratis su BasiMeme.it`;
+  const description = meme.description ?? `Template meme "${meme.title}" - scarica gratis su BasiMeme.it`;
   const tags = meme.tags.map(({ tag }) => tag.name);
   return {
     title: meme.title,
     description,
     keywords: ["meme", "template", meme.title, ...tags],
     openGraph: {
-      title: `${meme.title} — BasiMeme.it`,
+      title: `${meme.title} - BasiMeme.it`,
       description,
       images: meme.thumbnailUrl ? [meme.thumbnailUrl] : meme.fileType !== "VIDEO" ? [meme.fileUrl] : [],
       type: "article",
@@ -243,7 +243,7 @@ export default async function BaseDetailPage({ params }: Props) {
               </div>
             )}
 
-            {/* Suggest edit — only for logged-in users */}
+            {/* Suggest edit - only for logged-in users */}
             {session && (
               <div className="pt-2 border-t border-zinc-800/50">
                 <SuggestEditModal
