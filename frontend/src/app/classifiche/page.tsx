@@ -11,22 +11,41 @@ import {
   getRank,
 } from "@/lib/queries";
 import { formatNumber } from "@/lib/utils";
-import { Trophy, Crown, Medal, Star, Heart, Download, Lightbulb, Flame, Package } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Classifiche",
-  description: "I creator più attivi, i meme più amati, le classifiche di BasiMeme.it",
+  description: "I creator piu attivi, i meme piu amati, le classifiche di BasiMeme.it",
 };
 
-const MEDAL_COLORS = ["#f59e0b", "#9ca3af", "#b45309"];
-
-function MedalIcon({ rank }: { rank: number }) {
-  if (rank === 0) return <Crown className="h-5 w-5" style={{ color: MEDAL_COLORS[0] }} />;
-  if (rank === 1) return <Medal className="h-4 w-4" style={{ color: MEDAL_COLORS[1] }} />;
-  if (rank === 2) return <Medal className="h-4 w-4" style={{ color: MEDAL_COLORS[2] }} />;
-  return <span className="text-zinc-600 font-bold text-sm w-4 text-center">{rank + 1}</span>;
+function MedalLabel({ rank }: { rank: number }) {
+  if (rank === 0)
+    return (
+      <span
+        className="font-mono font-bold"
+        style={{ fontSize: "11px", color: "var(--acid)" }}
+      >
+        01
+      </span>
+    );
+  if (rank < 3)
+    return (
+      <span
+        className="font-mono font-bold"
+        style={{ fontSize: "11px", color: "var(--paper)" }}
+      >
+        {String(rank + 1).padStart(2, "0")}
+      </span>
+    );
+  return (
+    <span
+      className="font-mono"
+      style={{ fontSize: "11px", color: "var(--ghost)" }}
+    >
+      {String(rank + 1).padStart(2, "0")}
+    </span>
+  );
 }
 
 function UserRow({
@@ -36,7 +55,13 @@ function UserRow({
   suffix,
 }: {
   rank: number;
-  user: { id: string; username: string; name: string | null; image: string | null; points: number };
+  user: {
+    id: string;
+    username: string;
+    name: string | null;
+    image: string | null;
+    points: number;
+  };
   value: number | string;
   suffix: string;
 }) {
@@ -46,42 +71,72 @@ function UserRow({
   return (
     <Link
       href={`/u/${user.username}`}
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors group ${
-        isTop3
-          ? "bg-zinc-900 border border-zinc-800 hover:border-zinc-700"
-          : "hover:bg-zinc-900/60"
-      }`}
+      className="flex items-center gap-3 px-4 py-3 transition-colors group"
+      style={{
+        borderBottom: "1px solid rgba(90, 86, 78, 0.2)",
+        backgroundColor: isTop3 ? "rgba(245, 241, 232, 0.02)" : "transparent",
+      }}
     >
       <div className="w-6 flex items-center justify-center shrink-0">
-        <MedalIcon rank={rank} />
+        <MedalLabel rank={rank} />
       </div>
       {user.image ? (
         <Image
           src={user.image}
           alt={user.username}
-          width={36}
-          height={36}
-          className={`rounded-full shrink-0 ${rank === 0 ? "ring-2 ring-amber-400/50" : ""}`}
+          width={32}
+          height={32}
+          className="rounded-full shrink-0"
+          style={{
+            border: `1px solid ${rank === 0 ? "var(--acid)" : "var(--ghost)"}`,
+          }}
         />
       ) : (
         <div
-          className={`h-9 w-9 rounded-full bg-amber-400 text-black flex items-center justify-center font-black text-sm shrink-0 ${rank === 0 ? "ring-2 ring-amber-400/50" : ""}`}
+          className="h-8 w-8 rounded-full flex items-center justify-center font-mono uppercase shrink-0"
+          style={{
+            border: `1px solid ${rank === 0 ? "var(--acid)" : "var(--ghost)"}`,
+            color: "var(--paper)",
+            fontSize: "12px",
+          }}
         >
           {user.username[0].toUpperCase()}
         </div>
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-semibold text-white text-sm group-hover:text-amber-400 transition-colors">
+          <span
+            className="font-serif italic transition-colors"
+            style={{ fontSize: "14px", color: "var(--paper)" }}
+          >
             @{user.username}
           </span>
-          <span className="text-xs" title={rankInfo.label}>{rankInfo.emoji}</span>
+          <span className="text-xs" title={rankInfo.label}>
+            {rankInfo.emoji}
+          </span>
         </div>
-        {user.name && <p className="text-xs text-zinc-500 truncate">{user.name}</p>}
+        {user.name && (
+          <p
+            className="font-mono uppercase tracking-[0.15em] truncate"
+            style={{ fontSize: "9px", color: "var(--ghost)" }}
+          >
+            {user.name}
+          </p>
+        )}
       </div>
       <div className="text-right shrink-0">
-        <p className="font-bold text-white text-sm">{typeof value === "number" ? formatNumber(value) : value}</p>
-        <p className="text-xs text-zinc-600">{suffix}</p>
+        <p
+          className="font-display font-bold"
+          style={{ fontSize: "16px", color: "var(--paper)" }}
+        >
+          {typeof value === "number" ? formatNumber(value) : value}
+        </p>
+        <p
+          className="font-mono uppercase tracking-[0.15em]"
+          style={{ fontSize: "9px", color: "var(--ghost)" }}
+        >
+          {suffix}
+        </p>
       </div>
     </Link>
   );
@@ -89,173 +144,274 @@ function UserRow({
 
 function LeaderboardCard({
   title,
-  icon: Icon,
-  color,
+  index,
   children,
 }: {
   title: string;
-  icon: React.ElementType;
-  color: string;
+  index: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden">
-      <div className={`flex items-center gap-2.5 px-5 py-4 border-b border-zinc-800 bg-zinc-900/40`}>
-        <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${color}`}>
-          <Icon className="h-4 w-4" />
-        </div>
-        <h2 className="font-bold text-white">{title}</h2>
+    <div
+      style={{
+        border: "1px solid rgba(90, 86, 78, 0.35)",
+        backgroundColor: "var(--ink)",
+      }}
+    >
+      <div
+        className="flex items-center gap-3 px-5 py-4"
+        style={{ borderBottom: "1px solid rgba(90, 86, 78, 0.35)" }}
+      >
+        <span
+          className="font-mono uppercase tracking-[0.2em]"
+          style={{ fontSize: "9px", color: "var(--ghost)" }}
+        >
+          {index} /
+        </span>
+        <h2
+          className="font-serif italic font-normal"
+          style={{ fontSize: "18px", color: "var(--paper)" }}
+        >
+          {title}
+        </h2>
       </div>
-      <div className="p-3 space-y-0.5">{children}</div>
+      <div>{children}</div>
     </div>
   );
 }
 
 export default async function ClassifichePage() {
-  const [byPoints, byBases, byUpvotes, byDownloads, bySuggestions, popularBases] = await Promise.all([
-    getLeaderboardByPoints(10),
-    getLeaderboardByBases(10),
-    getLeaderboardByUpvotes(10),
-    getLeaderboardByDownloads(10),
-    getLeaderboardBySuggestions(10),
-    getMostPopularBases(10),
-  ]);
+  const [byPoints, byBases, byUpvotes, byDownloads, bySuggestions, popularBases] =
+    await Promise.all([
+      getLeaderboardByPoints(10),
+      getLeaderboardByBases(10),
+      getLeaderboardByUpvotes(10),
+      getLeaderboardByDownloads(10),
+      getLeaderboardBySuggestions(10),
+      getMostPopularBases(10),
+    ]);
+
+  const emptyState = (text: string) => (
+    <p
+      className="font-serif italic text-center py-8"
+      style={{ fontSize: "14px", color: "var(--ghost)" }}
+    >
+      {text}
+    </p>
+  );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-20 pb-32">
       {/* Header */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/20 rounded-full px-4 py-1.5 text-sm text-amber-400 font-medium mb-5">
-          <Trophy className="h-4 w-4" />
-          Hall of Fame
-        </div>
-        <h1 className="text-4xl font-black text-white mb-3">Classifiche</h1>
-        <p className="text-zinc-400 max-w-lg mx-auto">
-          I migliori creator, le basi più amate, i contributi più utili.<br />
-          Guadagna punti caricando basi e proponendo modifiche.
+      <header className="mb-16">
+        <h1
+          className="font-serif italic font-normal mb-3"
+          style={{
+            fontSize: "clamp(2.2rem, 4.5vw, 3.4rem)",
+            lineHeight: 1.05,
+            color: "var(--paper)",
+            letterSpacing: "-0.015em",
+          }}
+        >
+          Classifiche.
+        </h1>
+        <p
+          className="font-serif italic max-w-md"
+          style={{ fontSize: "15px", color: "var(--ghost)", lineHeight: 1.5 }}
+        >
+          i migliori creator, le basi piu amate, i contributi piu utili.
+          <br />
+          guadagna punti caricando basi e proponendo modifiche.
         </p>
-      </div>
 
-      {/* Points tiers legend */}
-      <div className="flex flex-wrap gap-2 justify-center mb-10">
-        {[
-          { label: "Newbie", emoji: "🌱", min: "0" },
-          { label: "Mematore", emoji: "🧃", min: "50" },
-          { label: "Veterano", emoji: "🏅", min: "200" },
-          { label: "Pro del Meme", emoji: "🔥", min: "500" },
-          { label: "Leggenda", emoji: "👑", min: "1.000" },
-        ].map(({ label, emoji, min }) => (
-          <div key={label} className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 text-xs">
-            <span>{emoji}</span>
-            <span className="text-white font-medium">{label}</span>
-            <span className="text-zinc-500">da {min} pt</span>
-          </div>
-        ))}
-      </div>
+        {/* Rank tiers */}
+        <div className="flex flex-wrap gap-2 mt-8">
+          {[
+            { label: "newbie", emoji: "🌱", min: "0" },
+            { label: "mematore", emoji: "🧃", min: "50" },
+            { label: "veterano", emoji: "🏅", min: "200" },
+            { label: "pro del meme", emoji: "🔥", min: "500" },
+            { label: "leggenda", emoji: "👑", min: "1000" },
+          ].map(({ label, emoji, min }) => (
+            <div
+              key={label}
+              className="flex items-center gap-1.5 py-1.5 px-3 font-mono uppercase tracking-[0.15em]"
+              style={{
+                fontSize: "10px",
+                border: "1px solid rgba(90, 86, 78, 0.4)",
+                color: "var(--paper)",
+              }}
+            >
+              <span>{emoji}</span>
+              <span>{label}</span>
+              <span style={{ color: "var(--ghost)" }}>da {min} pt</span>
+            </div>
+          ))}
+        </div>
+      </header>
 
-      {/* Main grids */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Top by points */}
-        <LeaderboardCard title="Top Contributor" icon={Star} color="bg-amber-400/10 text-amber-400">
-          {byPoints.length === 0 ? (
-            <p className="text-zinc-600 text-sm text-center py-4">Nessun dato ancora</p>
-          ) : (
-            byPoints.map((user, i) => (
-              <UserRow key={user.id} rank={i} user={user} value={user.points} suffix="punti" />
-            ))
-          )}
+      {/* Main grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <LeaderboardCard title="Top contributor" index="01">
+          {byPoints.length === 0
+            ? emptyState("nessun dato ancora.")
+            : byPoints.map((user, i) => (
+                <UserRow
+                  key={user.id}
+                  rank={i}
+                  user={user}
+                  value={user.points}
+                  suffix="punti"
+                />
+              ))}
         </LeaderboardCard>
 
-        {/* Top by bases */}
-        <LeaderboardCard title="Più Prolifici" icon={Package} color="bg-blue-400/10 text-blue-400">
-          {byBases.length === 0 ? (
-            <p className="text-zinc-600 text-sm text-center py-4">Nessun dato ancora</p>
-          ) : (
-            byBases.map(({ user, count }, i) => (
-              <UserRow key={user.id} rank={i} user={user} value={count} suffix="basi" />
-            ))
-          )}
+        <LeaderboardCard title="Piu prolifici" index="02">
+          {byBases.length === 0
+            ? emptyState("nessun dato ancora.")
+            : byBases.map(({ user, count }, i) => (
+                <UserRow key={user.id} rank={i} user={user} value={count} suffix="basi" />
+              ))}
         </LeaderboardCard>
 
-        {/* Top by upvotes */}
-        <LeaderboardCard title="Più Amati" icon={Heart} color="bg-red-400/10 text-red-400">
-          {byUpvotes.length === 0 ? (
-            <p className="text-zinc-600 text-sm text-center py-4">Nessun dato ancora</p>
-          ) : (
-            byUpvotes.map(({ user, count }, i) => (
-              <UserRow key={user.id} rank={i} user={user} value={count} suffix="upvote" />
-            ))
-          )}
+        <LeaderboardCard title="Piu amati" index="03">
+          {byUpvotes.length === 0
+            ? emptyState("nessun dato ancora.")
+            : byUpvotes.map(({ user, count }, i) => (
+                <UserRow
+                  key={user.id}
+                  rank={i}
+                  user={user}
+                  value={count}
+                  suffix="upvote"
+                />
+              ))}
         </LeaderboardCard>
 
-        {/* Top by downloads */}
-        <LeaderboardCard title="Più Scaricati" icon={Download} color="bg-green-400/10 text-green-400">
-          {byDownloads.length === 0 ? (
-            <p className="text-zinc-600 text-sm text-center py-4">Nessun dato ancora</p>
-          ) : (
-            byDownloads.map(({ user, count }, i) => (
-              <UserRow key={user.id} rank={i} user={user} value={count} suffix="download" />
-            ))
-          )}
+        <LeaderboardCard title="Piu scaricati" index="04">
+          {byDownloads.length === 0
+            ? emptyState("nessun dato ancora.")
+            : byDownloads.map(({ user, count }, i) => (
+                <UserRow
+                  key={user.id}
+                  rank={i}
+                  user={user}
+                  value={count}
+                  suffix="download"
+                />
+              ))}
         </LeaderboardCard>
       </div>
 
       {/* Bottom row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Top suggesters */}
-        <LeaderboardCard title="Migliori Editor" icon={Lightbulb} color="bg-purple-400/10 text-purple-400">
-          {bySuggestions.length === 0 ? (
-            <p className="text-zinc-600 text-sm text-center py-4">Nessuna modifica approvata ancora</p>
-          ) : (
-            bySuggestions.map(({ user, count }, i) => (
-              <UserRow key={user.id} rank={i} user={user} value={count} suffix="modifiche approvate" />
-            ))
-          )}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <LeaderboardCard title="Migliori editor" index="05">
+          {bySuggestions.length === 0
+            ? emptyState("nessuna modifica approvata ancora.")
+            : bySuggestions.map(({ user, count }, i) => (
+                <UserRow
+                  key={user.id}
+                  rank={i}
+                  user={user}
+                  value={count}
+                  suffix="modifiche"
+                />
+              ))}
         </LeaderboardCard>
 
         {/* Most popular bases */}
-        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden">
-          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-zinc-800 bg-zinc-900/40">
-            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-orange-400/10 text-orange-400">
-              <Flame className="h-4 w-4" />
-            </div>
-            <h2 className="font-bold text-white">Basi Più Amate</h2>
+        <div
+          style={{
+            border: "1px solid rgba(90, 86, 78, 0.35)",
+            backgroundColor: "var(--ink)",
+          }}
+        >
+          <div
+            className="flex items-center gap-3 px-5 py-4"
+            style={{ borderBottom: "1px solid rgba(90, 86, 78, 0.35)" }}
+          >
+            <span
+              className="font-mono uppercase tracking-[0.2em]"
+              style={{ fontSize: "9px", color: "var(--ghost)" }}
+            >
+              06 /
+            </span>
+            <h2
+              className="font-serif italic font-normal"
+              style={{ fontSize: "18px", color: "var(--paper)" }}
+            >
+              Basi piu amate
+            </h2>
           </div>
-          <div className="p-3 space-y-0.5">
-            {popularBases.length === 0 ? (
-              <p className="text-zinc-600 text-sm text-center py-4">Nessuna base ancora</p>
-            ) : (
-              popularBases.map((base, i) => (
-                <Link
-                  key={base.id}
-                  href={`/base/${base.slug}`}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors hover:bg-zinc-900/60 group ${i < 3 ? "bg-zinc-900 border border-zinc-800" : ""}`}
-                >
-                  <div className="w-6 flex items-center justify-center shrink-0">
-                    <MedalIcon rank={i} />
-                  </div>
-                  <div className="relative h-10 w-16 rounded-lg overflow-hidden bg-zinc-800 shrink-0">
-                    {base.fileType !== "VIDEO" && (
-                      <Image src={base.fileUrl} alt={base.title} fill className="object-cover" unoptimized />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-white text-sm truncate group-hover:text-amber-400 transition-colors">
-                      {base.title}
-                    </p>
-                    {base.category && (
-                      <p className="text-xs text-zinc-500">{base.category.iconEmoji} {base.category.name}</p>
-                    )}
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="font-bold text-white text-sm flex items-center gap-1">
-                      <Heart className="h-3 w-3 text-red-400" />
-                      {formatNumber(base.upvotesCount)}
-                    </p>
-                  </div>
-                </Link>
-              ))
-            )}
+          <div>
+            {popularBases.length === 0
+              ? emptyState("nessuna base ancora.")
+              : popularBases.map((base, i) => (
+                  <Link
+                    key={base.id}
+                    href={`/base/${base.slug}`}
+                    className="flex items-center gap-3 px-4 py-3 transition-colors group"
+                    style={{
+                      borderBottom: "1px solid rgba(90, 86, 78, 0.2)",
+                      backgroundColor:
+                        i < 3 ? "rgba(245, 241, 232, 0.02)" : "transparent",
+                    }}
+                  >
+                    <div className="w-6 flex items-center justify-center shrink-0">
+                      <MedalLabel rank={i} />
+                    </div>
+                    <div
+                      className="relative h-10 w-14 overflow-hidden shrink-0"
+                      style={{
+                        backgroundColor: "var(--shadow)",
+                        border: "1px solid rgba(90, 86, 78, 0.3)",
+                      }}
+                    >
+                      {base.fileType !== "VIDEO" && (
+                        <Image
+                          src={base.fileUrl}
+                          alt={base.title}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="font-serif truncate"
+                        style={{ fontSize: "14px", color: "var(--paper)" }}
+                      >
+                        {base.title.toLowerCase()}
+                      </p>
+                      {base.category && (
+                        <p
+                          className="font-mono uppercase tracking-[0.15em]"
+                          style={{ fontSize: "9px", color: "var(--ghost)" }}
+                        >
+                          {base.category.iconEmoji} {base.category.name}
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-right shrink-0 flex items-center gap-1">
+                      <span
+                        className="font-mono"
+                        style={{
+                          fontSize: "11px",
+                          color: "var(--acid)",
+                        }}
+                      >
+                        ▲
+                      </span>
+                      <span
+                        className="font-display font-bold"
+                        style={{ fontSize: "15px", color: "var(--paper)" }}
+                      >
+                        {formatNumber(base.upvotesCount)}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
           </div>
         </div>
       </div>

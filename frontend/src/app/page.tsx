@@ -41,12 +41,6 @@ export default async function HomePage({ searchParams }: PageProps) {
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10">
             {/* Left: title block */}
             <div className="flex-1 max-w-xl">
-              <p
-                className="font-mono uppercase tracking-[0.2em] mb-3"
-                style={{ fontSize: "10px", color: "var(--ghost)" }}
-              >
-                § 02 / catalogo
-              </p>
               <h2
                 className="font-serif italic font-normal mb-3"
                 style={{

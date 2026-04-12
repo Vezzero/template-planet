@@ -6,7 +6,9 @@ const WORDS = [
   "aura", "buongiorno", "shitpost", "ferrara", "luminescenza",
   "sofficini", "meteo", "esercito di", "normie", "textpost",
   "dank", "soltero", "lol", "gormita", "ADESSO", "morto di",
-  "cobblestone", "shamn", "fico",
+  "cobblestone", "shamn", "fico", "testo sopra", "testo sotto",
+  "testo", "ceo", "abbiate grasso", "pescara calcio", "spermuta",
+  "impact",
 ];
 
 const SCRAMBLE_CHARS = "abcdefghijklmnopqrstuvwxyz!@#$%&*?{}";
