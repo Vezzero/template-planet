@@ -1,31 +1,13 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 function LoginForm() {
   const params = useSearchParams();
-  const router = useRouter();
   const callbackUrl = params.get("callbackUrl") || "/";
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleCredentials = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    const res = await signIn("credentials", { email, password, redirect: false });
-    setLoading(false);
-    if (res?.error) {
-      setError("email o password non corretti");
-      return;
-    }
-    router.push(callbackUrl);
-  };
 
   const handleGoogle = () => signIn("google", { callbackUrl });
 
@@ -37,7 +19,6 @@ function LoginForm() {
         backgroundColor: "var(--ink)",
       }}
     >
-      {/* Google */}
       <button
         type="button"
         onClick={handleGoogle}
@@ -57,99 +38,26 @@ function LoginForm() {
         </svg>
         continua con google
       </button>
+      <p
+        className="text-center font-mono uppercase tracking-[0.15em]"
+        style={{ fontSize: "10px", color: "var(--ghost)", lineHeight: 1.8 }}
+      >
+        accesso disponibile solo con account google.
+        <br />
+        il profilo viene creato automaticamente al primo accesso.
+      </p>
 
-      {/* Divider */}
-      <div className="flex items-center gap-4">
-        <div className="flex-1" style={{ height: "1px", backgroundColor: "var(--ghost)", opacity: 0.3 }} />
-        <span className="font-mono uppercase tracking-[0.2em]" style={{ fontSize: "9px", color: "var(--ghost)" }}>
-          oppure
-        </span>
-        <div className="flex-1" style={{ height: "1px", backgroundColor: "var(--ghost)", opacity: 0.3 }} />
-      </div>
-
-      {/* Credentials form */}
-      <form onSubmit={handleCredentials} className="space-y-4">
-        {error && (
-          <div
-            className="font-mono uppercase tracking-[0.15em] px-4 py-2.5"
-            style={{
-              fontSize: "10px",
-              color: "var(--blood)",
-              border: "1px solid var(--blood)",
-              backgroundColor: "rgba(139, 26, 26, 0.08)",
-            }}
-          >
-            ! {error}
-          </div>
-        )}
-        <div>
-          <label
-            className="block font-mono uppercase tracking-[0.2em] mb-2"
-            style={{ fontSize: "9px", color: "var(--ghost)" }}
-          >
-            email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full py-2.5 px-0 bg-transparent font-serif text-base outline-none transition-colors"
-            style={{
-              color: "var(--paper)",
-              borderBottom: "1px solid var(--ghost)",
-              caretColor: "var(--acid)",
-            }}
-            placeholder="nome@email.com"
-          />
-        </div>
-        <div>
-          <label
-            className="block font-mono uppercase tracking-[0.2em] mb-2"
-            style={{ fontSize: "9px", color: "var(--ghost)" }}
-          >
-            password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full py-2.5 px-0 bg-transparent font-serif text-base outline-none transition-colors"
-            style={{
-              color: "var(--paper)",
-              borderBottom: "1px solid var(--ghost)",
-              caretColor: "var(--acid)",
-            }}
-            placeholder="la tua password"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3 font-mono uppercase tracking-[0.2em] transition-all disabled:opacity-50"
-          style={{
-            fontSize: "11px",
-            color: "var(--ink)",
-            backgroundColor: "var(--paper)",
-          }}
-        >
-          {loading ? "..." : "accedi"}
-        </button>
-      </form>
-
-      {/* Register link */}
       <p
         className="text-center font-mono uppercase tracking-[0.15em]"
         style={{ fontSize: "10px", color: "var(--ghost)" }}
       >
-        non hai un account?{" "}
+        non hai ancora un account?{" "}
         <Link
           href="/auth/register"
           className="relative"
           style={{ color: "var(--paper)" }}
         >
-          registrati
+          usa google
           <span
             className="absolute left-0 right-0"
             style={{ bottom: "-3px", height: "1px", backgroundColor: "var(--acid)" }}
@@ -190,7 +98,7 @@ export default function LoginPage() {
             className="font-mono uppercase tracking-[0.2em] text-center mt-3"
             style={{ fontSize: "10px", color: "var(--ghost)" }}
           >
-            accedi a basimeme.it
+            accedi a basimeme.it con google
           </p>
         </div>
         <Suspense fallback={<div className="h-64 skeleton" />}>

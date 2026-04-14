@@ -1,42 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const [form, setForm] = useState({ email: "", username: "", password: "" });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "errore durante la registrazione");
-        return;
-      }
-      await signIn("credentials", {
-        email: form.email,
-        password: form.password,
-        callbackUrl: "/",
-      });
-      router.push("/");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div
       className="min-h-[80vh] flex items-center justify-center px-6"
@@ -65,17 +32,16 @@ export default function RegisterPage() {
               lineHeight: 1.1,
             }}
           >
-            crea account.
+            entra con google.
           </h1>
           <p
             className="font-mono uppercase tracking-[0.2em] text-center mt-3"
             style={{ fontSize: "10px", color: "var(--ghost)" }}
           >
-            unisciti a basimeme.it
+            registrazione disponibile solo con google
           </p>
         </div>
 
-        {/* Card */}
         <div
           className="p-8 space-y-6"
           style={{
@@ -83,7 +49,6 @@ export default function RegisterPage() {
             backgroundColor: "var(--ink)",
           }}
         >
-          {/* Google */}
           <button
             type="button"
             onClick={() => signIn("google", { callbackUrl: "/" })}
@@ -104,132 +69,22 @@ export default function RegisterPage() {
             registrati con google
           </button>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4">
-            <div
-              className="flex-1"
-              style={{ height: "1px", backgroundColor: "var(--ghost)", opacity: 0.3 }}
-            />
-            <span
-              className="font-mono uppercase tracking-[0.2em]"
-              style={{ fontSize: "9px", color: "var(--ghost)" }}
-            >
-              oppure
-            </span>
-            <div
-              className="flex-1"
-              style={{ height: "1px", backgroundColor: "var(--ghost)", opacity: 0.3 }}
-            />
-          </div>
+          <p
+            className="text-center font-mono uppercase tracking-[0.15em]"
+            style={{ fontSize: "10px", color: "var(--ghost)", lineHeight: 1.8 }}
+          >
+            non supportiamo piu registrazione con email e password.
+            <br />
+            al primo accesso con google il profilo viene creato automaticamente.
+          </p>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div
-                className="font-mono uppercase tracking-[0.15em] px-4 py-2.5"
-                style={{
-                  fontSize: "10px",
-                  color: "var(--blood)",
-                  border: "1px solid var(--blood)",
-                  backgroundColor: "rgba(139, 26, 26, 0.08)",
-                }}
-              >
-                ! {error}
-              </div>
-            )}
-            <div>
-              <label
-                className="block font-mono uppercase tracking-[0.2em] mb-2"
-                style={{ fontSize: "9px", color: "var(--ghost)" }}
-              >
-                email
-              </label>
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                required
-                className="w-full py-2.5 px-0 bg-transparent font-serif text-base outline-none transition-colors"
-                style={{
-                  color: "var(--paper)",
-                  borderBottom: "1px solid var(--ghost)",
-                  caretColor: "var(--acid)",
-                }}
-                placeholder="nome@email.com"
-              />
-            </div>
-            <div>
-              <label
-                className="block font-mono uppercase tracking-[0.2em] mb-2"
-                style={{ fontSize: "9px", color: "var(--ghost)" }}
-              >
-                username
-              </label>
-              <input
-                type="text"
-                value={form.username}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    username: e.target.value.replace(/[^a-z0-9_]/gi, "").toLowerCase(),
-                  })
-                }
-                required
-                minLength={3}
-                maxLength={24}
-                className="w-full py-2.5 px-0 bg-transparent font-serif text-base outline-none transition-colors"
-                style={{
-                  color: "var(--paper)",
-                  borderBottom: "1px solid var(--ghost)",
-                  caretColor: "var(--acid)",
-                }}
-                placeholder="solo lettere, numeri, _"
-              />
-            </div>
-            <div>
-              <label
-                className="block font-mono uppercase tracking-[0.2em] mb-2"
-                style={{ fontSize: "9px", color: "var(--ghost)" }}
-              >
-                password
-              </label>
-              <input
-                type="password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                required
-                minLength={8}
-                className="w-full py-2.5 px-0 bg-transparent font-serif text-base outline-none transition-colors"
-                style={{
-                  color: "var(--paper)",
-                  borderBottom: "1px solid var(--ghost)",
-                  caretColor: "var(--acid)",
-                }}
-                placeholder="min 8 caratteri"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 font-mono uppercase tracking-[0.2em] transition-all disabled:opacity-50"
-              style={{
-                fontSize: "11px",
-                color: "var(--ink)",
-                backgroundColor: "var(--paper)",
-              }}
-            >
-              {loading ? "..." : "crea account"}
-            </button>
-          </form>
-
-          {/* Login link */}
           <p
             className="text-center font-mono uppercase tracking-[0.15em]"
             style={{ fontSize: "10px", color: "var(--ghost)" }}
           >
             hai gia un account?{" "}
             <Link href="/auth/login" className="relative" style={{ color: "var(--paper)" }}>
-              accedi
+              entra con google
               <span
                 className="absolute left-0 right-0"
                 style={{ bottom: "-3px", height: "1px", backgroundColor: "var(--acid)" }}
@@ -237,7 +92,6 @@ export default function RegisterPage() {
             </Link>
           </p>
 
-          {/* ToS */}
           <p
             className="text-center font-mono uppercase tracking-[0.15em]"
             style={{ fontSize: "9px", color: "var(--ghost)" }}

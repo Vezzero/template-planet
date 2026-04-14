@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
 
+const mockAuthEnabled = process.env.NEXT_PUBLIC_AUTH_MOCK_USER === "true";
+
 export function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
@@ -51,8 +53,7 @@ export function Navbar() {
           { href: `/u/${session.user.username}`, label: "profilo", index: "05" },
         ]
       : [
-          { href: "/auth/login", label: "accedi", index: "04" },
-          { href: "/auth/register", label: "registrati", index: "05" },
+          { href: "/auth/login", label: "entra con google", index: "04" },
         ]),
   ];
 
@@ -235,13 +236,13 @@ export function Navbar() {
                     <button
                       type="button"
                       onClick={() => {
-                        signOut();
+                        if (!mockAuthEnabled) signOut();
                         setUserMenuOpen(false);
                       }}
                       className="block w-full text-left px-4 py-2.5 font-serif italic transition-colors hover:[background-color:rgba(139,26,26,0.1)]"
                       style={{ color: "var(--blood)", fontSize: "14px" }}
                     >
-                      esci
+                      {mockAuthEnabled ? "mock attivo" : "esci"}
                     </button>
                   </div>
                 )}
@@ -251,22 +252,9 @@ export function Navbar() {
                 <Link
                   href="/auth/login"
                   className="nav-link-plain font-mono uppercase tracking-[0.2em]"
-                  style={{ fontSize: "11px", color: "var(--ghost)" }}
-                >
-                  accedi
-                </Link>
-                <span
-                  style={{ color: "var(--ghost)", opacity: 0.4, fontSize: "11px" }}
-                  aria-hidden="true"
-                >
-                  /
-                </span>
-                <Link
-                  href="/auth/register"
-                  className="register-link relative font-mono uppercase tracking-[0.2em]"
                   style={{ fontSize: "11px", color: "var(--paper)" }}
                 >
-                  registrati
+                  entra con google
                   <span
                     aria-hidden="true"
                     style={{

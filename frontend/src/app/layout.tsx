@@ -4,6 +4,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { auth } from "@/lib/auth";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -50,14 +51,16 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+
   return (
     <html lang="it" className="dark">
       <body
         className={`${bricolage.variable} ${fraunces.variable} ${jetbrains.variable} antialiased min-h-screen flex flex-col`}
         style={{ backgroundColor: "var(--ink)", color: "var(--paper)" }}
       >
-        <SessionProvider>
+        <SessionProvider session={session}>
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
